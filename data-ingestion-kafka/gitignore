@@ -1,0 +1,19 @@
+# Python
+_pycache_/
+*.pyc
+.venv/
+.env
+
+# Logs
+*.log
+/tmp/
+
+# OS files
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Dataset
+data-ingestion-kafka/data/finance_delta
