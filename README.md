@@ -138,3 +138,15 @@ One of the best ways to get started contributing is by improving FinanceLake's d
 Message us on <a href="https://discord.gg/rP2dNEFJ4Y" target="_blank">Discord</a>
 
 ## 📄 License<a id="license"></a>
+
+## FinanceLake API
+
+Cette API fournit des données financières protégées par un système d’authentification **JWT**.
+
+## Utilisation
+
+1. Obtenir un **token JWT** via la route `/login` en envoyant un POST avec ton `username` et `password` :
+
+```bash
+curl -X POST http://127.0.0.1:5000/login -H "Content-Type: application/json" -d '{"username":"admin","password":"password123"}'
+
