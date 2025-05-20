@@ -3,56 +3,128 @@ version: "3.8"
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT:-2181}
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
+      - "${ZOOKEEPER_CLIENT_PORT:-2181}:2181"
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     depends_on:
-      - zookeeper
-    ports:
-      - "${KAFKA_PORT}:${KAFKA_PORT}"
+      zookeeper:
+        condition: service_healthy
     environment:
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:-1}
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_CLIENT_PORT:-2181}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    ports:
+      - "${KAFKA_PORT:-9092}:9092"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  spark:
+  spark-master:
     image: bitnami/spark:latest
+    container_name: spark-master
     environment:
       - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
     ports:
-      - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
-      - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
+      - "${SPARK_MASTER_PORT:-7077}:7077"
+      - "${SPARK_WEB_UI_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
-  superset:
-    image: apache/superset
-    ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
-    environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+  spark-worker:
+    image: bitnami/spark:latest
+    container_name: spark-worker
     depends_on:
-      - spark
-    command: >
-      /bin/bash -c "
-        superset db upgrade &&
-        superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
-        superset init &&
-        superset run -h 0.0.0.0 -p 8088"
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:${SPARK_MASTER_PORT:-7077}
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
 
   postgres:
     image: postgres:15
+    container_name: postgres
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-financelake}
+      POSTGRES_USER: ${POSTGRES_USER:-finuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finpass}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    depends_on:
+      postgres:
+        condition: service_healthy
+      spark-master:
+        condition: service_healthy
+    ports:
+      - "${SUPERSET_PORT:-8088}:8088"
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-supersecretkey}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-finuser}:${POSTGRES_PASSWORD:-finpass}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-financelake}
+      # Variables d’admin Superset à gérer via init script ou commandes
+    command: >
+      /bin/bash -c "
+      superset db upgrade &&
+      superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME:-admin} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL:-admin@example.com} --password ${SUPERSET_ADMIN_PASSWORD:-admin123} &&
+      superset init &&
+      superset run -h 0.0.0.0 -p 8088
+      "
+
+  ingestion-service:
+    build: ./ingestion
+    container_name: ingestion-service
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:9092
+
+  processing-service:
+    build: ./processing
+    container_name: processing-service
+    depends_on:
+      - kafka
+      - postgres
+      - spark-master
+    environment:
+      KAFKA_BROKER: kafka:9092
+      DATABASE_URL: postgresql://${POSTGRES_USER:-finuser}:${POSTGRES_PASSWORD:-finpass}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-financelake}
+      SPARK_MASTER: spark://spark-master:${SPARK_MASTER_PORT:-7077}
 
 volumes:
   postgres_data:

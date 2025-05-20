@@ -1,0 +1,50 @@
+
+This document describes the configuration of the FinanceLake platform as defined by the provided docker-compose.yml file. This file is a key part of the Docker Compose installation method for FinanceLake and directly relates to the initiative to containerize all project components, including ingestion, processing, API, and visualization. FinanceLake is an open-source financial data platform designed for processing and analyzing financial data, built entirely on open and scalable technologies.
+Objective
+The docker-compose.yml file aims to simplify the deployment of FinanceLake by defining and orchestrating the necessary services (ingestion, processing, database, message bus, visualization, etc.) as Docker containers. It manages the creation, configuration, and networking of these containers, making installation and execution easier, especially in a development environment or on a single server.
+Service Structure
+The file defines a series of services, each representing a component or dependency of the FinanceLake platform:
+
+• zookeeper: This service hosts Apache Zookeeper, a coordinator for distributed systems. It is a required dependency for Kafka. It includes a health check to verify its status.
+• kafka: This service hosts Apache Kafka, a distributed message bus. It is used as the backbone for real-time data ingestion and message distribution between components. The ingestion and processing services connect to it. It depends on zookeeper and includes a health check.
+• spark-master: This service is the master node of an Apache Spark cluster, a key technology for the Big Data Processing component. It includes a health check accessible via its web UI port.
+• spark-worker: This service is an Apache Spark worker node. It registers with the spark-master service and executes distributed processing tasks. It depends on spark-master.
+• postgres: This service hosts a PostgreSQL database. It is used for data storage, potentially for processing results, service metadata, or for the internal operation of tools like Superset. A volume (postgres_data) is configured to persist database data outside the container's lifecycle. It includes a health check to check database readiness.
+• superset: This service hosts Apache Superset, a tool for interactive visualization and dashboard creation. It connects to the postgres database service. The configuration includes a command to initialize the Superset database, create an administrator user, and start the web server. It depends on postgres and spark-master.
+• ingestion-service: This service is a custom container, built from a Dockerfile located in the ./ingestion directory. It represents the Data Ingestion component of FinanceLake, which uses Apache Kafka. It depends on kafka.
+• processing-service: This service is also a custom container, built from a Dockerfile located in the ./processing directory. It represents the Big Data Processing component of FinanceLake, utilizing Apache Spark, Kafka, and PostgreSQL. It depends on kafka, postgres, and spark-master.
+
+
+
+Note: 
+
+The REST & GraphQL API component is mentioned as a feature of FinanceLake and is included in the task to containerize all project components. However, it is not explicitly defined as a separate service in the provided docker-compose.yml file. It might be integrated into one of the existing services or represent a future step in the containerization process.
+Configuration via Environment Variables
+The docker-compose.yml file is designed for flexibility by using environment variables. These variables allow for customizing configuration (ports, credentials, connection addresses, etc.) without directly modifying the file. Default values are provided (e.g., ${ZOOKEEPER_CLIENT_PORT:-2181}).
+It is recommended to define these variables in an .env file at the root of the project. Examples of important variables include ZOOKEEPER_CLIENT_PORT, KAFKA_PORT, KAFKA_BROKER, SPARK_MASTER_PORT, SPARK_WEB_UI_PORT, SPARK_MASTER, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, DATABASE_URL, SUPERSET_PORT, SUPERSET_SECRET_KEY, SUPERSET_ADMIN_USERNAME, SUPERSET_ADMIN_PASSWORD, and SUPERSET_ADMIN_EMAIL.
+The DATABASE_URL variable, for instance, is used by the superset and processing-service services to connect to the PostgreSQL database using the service name postgres. Similarly, KAFKA_BROKER uses kafka:9092, and SPARK_MASTER uses spark://spark-master:${SPARK_MASTER_PORT:-7077}.
+Inter-Service Communication
+
+Communication between containers is managed by Docker Compose:
+1. Default Network: All services defined in the file are connected to a default Docker virtual network. Within this network, services can refer to each other using their service names (e.g., kafka, postgres, spark-master) instead of IP addresses.
+2. Dependencies (depends_on): The file uses depends_on to specify the startup order of services. For example, kafka starts after zookeeper, spark-worker after spark-master, and the application services (ingestion-service, processing-service, superset) start after their main dependencies like kafka, postgres, or spark-master. The inclusion of condition: service_healthy (based on the defined healthchecks) ensures that Docker Compose waits for the dependent service to be healthy and ready before starting the consuming service.
+3. Connection Addresses: Services use the environment variables mentioned above to configure their connections to other services using Docker service names (e.g., postgres:5432 for the database, kafka:9092 for Kafka).
+4. Exposed Ports (ports): Some ports are mapped from the container to the host machine (Superset's port 8088 is mapped to the host's port 8088 by default). This allows access to these services from outside the Docker Compose network.
+
+
+This configuration ensures that the containerized FinanceLake components can discover and communicate effectively within the Docker environment.
+Links to Architecture and Features
+
+
+The services defined in this docker-compose.yml directly correspond to the main functional blocks of FinanceLake described in the README and the containerization goal:
+   • Data Ingestion is covered by the ingestion-service which interacts with kafka.
+   • Big Data Processing is handled by the processing-service utilizing the Spark cluster (spark-master, spark-worker) and interacting with kafka and postgres.
+   • Interactive Visualization is provided by the superset service connecting to postgres.
+   • The foundational infrastructure for storage and messaging is provided by postgres, kafka, and zookeeper.
+
+
+Execution: 
+
+To start the entire platform defined by this file, once Docker and Docker Compose are installed and the .env file is configured, the standard command (general Docker Compose information) is:
+docker compose up -d
+This command builds the necessary images (for ingestion-service and processing-service) and starts all services in detached mode (-d). The sources explicitly mention installation via Docker Compose.
