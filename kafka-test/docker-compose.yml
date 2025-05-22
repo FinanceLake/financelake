@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+    ports:
+      - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "${KAFKA_PORT}:${KAFKA_PORT}"
+    environment:
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  spark:
+    image: bitnami/spark:latest
+    environment:
+      - SPARK_MODE=master
+    ports:
+      - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
+      - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
+
+  superset:
+    image: apache/superset
+    ports:
+      - ${SUPERSET_PORT}:${SUPERSET_PORT}
+    environment:
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+    depends_on:
+      - spark
+    command: >
+      /bin/bash -c "
+        superset db upgrade &&
+        superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
+        superset init &&
+        superset run -h 0.0.0.0 -p 8088"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
