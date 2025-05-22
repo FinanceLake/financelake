@@ -1,2 +1,4 @@
 yfinance
 kafka
+pyspark>=3.4.0
+py4j>=0.10.9
