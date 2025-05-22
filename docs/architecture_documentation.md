@@ -102,7 +102,7 @@ Right-click on the canvas → "Add Template" → select it → "Add".
 
 ![Screenshot from 2025-05-22 10-50-57](https://github.com/user-attachments/assets/a5091110-f451-4f26-aa51-973bb51ac24e)
 
-![Screenshot from 2025-05-22 11-03-33](https://github.com/user-attachments/assets/ac2c2e5f-9319-4ac8-8b0f-469f071cc5d0)
+![Screenshot from 2025-05-22 11-42-18](https://github.com/user-attachments/assets/2c360714-cfe5-417d-8fd9-2bb56cbb5a04)
 
 
 ![Screenshot from 2025-05-22 11-03-06](https://github.com/user-attachments/assets/fbbf3fad-a82e-4c92-be83-0a8eecb8b8d4)
