@@ -135,7 +135,6 @@ python3 stock-producer.py
 
 ![Screenshot from 2025-05-18 13-49-18](https://github.com/user-attachments/assets/1023ca2d-20d2-46d3-bdfd-c0968f4463c9)
 
-![Screenshot from 2025-05-18 13-49-18](https://github.com/user-attachments/assets/0ca0040c-e518-46bd-a6bc-dbecae546ea7)
 
 
 Make sure the script targets the same port as your NiFi ListenHTTP processor.
