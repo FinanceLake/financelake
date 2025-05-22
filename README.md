@@ -138,3 +138,45 @@ One of the best ways to get started contributing is by improving FinanceLake's d
 Message us on <a href="https://discord.gg/rP2dNEFJ4Y" target="_blank">Discord</a>
 
 ## 📄 License<a id="license"></a>
+
+
+
+## 🔧 Environment Configuration
+
+Before running the project, configure your environment variables.
+
+1. Copy the `.env.example` file and create your own `.env` file:
+
+```bash
+cp .env.example .env
+```
+2. Edit the .env file and fill in your specific configuration:
+
+-DB_HOST:		Database host (e.g., localhost)
+-KAFKA_BROKER: 		Kafka broker address
+-SPARK_MASTER		Spark master URL
+-API_KEY:		Your API key
+-DATA_SOURCE_URL:	URL to fetch data from
+-RAW_DATA_PATH:		Path for storing raw data
+-DASHBOARD_USER:	Dashboard login user
+-LOG_LEVEL:		Logging level (e.g., INFO, DEBUG)
+
+
+# Steps to execute Kafka & HDFS:
+
+1. Start Kafka & Zookeeper
+
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
+
+2. Start HDFS 
+
+Make sure HDFS is running on localhost:9000.
+
+3. Start the Kafka producer
+
+python producer.py
+
+4. Deploy the HDFS connector
+
+curl -X POST -H "Content-Type: application/json" --data @hdfs-sink.json http://localhost:8083/connectors
