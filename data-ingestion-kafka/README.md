@@ -1,48 +1,45 @@
-###                                               FinanceLake – Mini-Projet d'Ingestion de Données 
+###                                               FinanceLake – Mini Data Ingestion Project
 
-Objectif
+Objective
 
-Ce projet a pour but de mettre en place une architecture d'ingestion de données en temps réel, en simulant des données financières, afin de les stocker dans un Data Lake (Delta Lake) pour une analyse ultérieure.
+The goal of this project is to implement a real-time data ingestion architecture by simulating financial data and storing it in a Data Lake (Delta Lake) for future analysis.
 
- Architecture Proposée
+Proposed Architecture
 
 ![Architecture du projet](../resources/img/architecture.png)
 
- Cette architecture suit une approche moderne orientée streaming pour assurer une ingestion rapide, fiable et évolutive.
+This architecture follows a modern, streaming-oriented approach to ensure fast, reliable, and scalable ingestion.
 
-Justification des choix technologiques
+**Justification for Technological Choices
+    *Apache Kafka: Used as a message broker to transport real-time events. It is a scalable, decentralized, and highly performant system.
+    -Spark Structured Streaming: Enables consumption of data from Kafka, transformation, and continuous storage. Its native compatibility with Kafka and -Delta Lake makes it an excellent choice for stream processing.
+    -Delta Lake: Provides a transactional (ACID) storage layer on top of Parquet files. It ensures reliable and versioned data management within a Data Lake.
+    -Simulated Python Producer: A simple data source to simulate a continuous stream of stock prices.
+*
+How It Works
 
-Apache Kafka : Utilisé comme broker de messages pour transporter des événements en temps réel. C'est un système scalable, décentralisé et hautement performant.
+1. Start Kafka (Assumed to be pre-configured)
 
-Spark Structured Streaming : Permet de consommer les données de Kafka, de les transformer et de les stocker en continu. Sa compatibilité native avec Kafka et Delta Lake en fait un excellent choix pour le traitement de flux.
-
-Delta Lake : Fournit une couche de stockage transactionnelle (ACID) sur les fichiers Parquet. Il permet une gestion fiable et versionnée des données dans un Data Lake.
-
-Producteur Python simulé : Une source de données simple pour simuler un flux continu de valeurs boursières.
-
-Fonctionnement
-
-1. Lancer Kafka (assumé comme déjà configuré)
-
-Démarrer Zookeeper puis Kafka :
+Start Zookeeper and then Kafka:
 # bin/zookeeper-server-start.sh config/zookeeper.properties
 # bin/kafka-server-start.sh config/server.properties
-Créer le topic "finance" :
+Create the topic "finance":
 # bin/kafka-topics.sh --create --topic finance --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 
-2. Exécuter le producteur
+2. Run the Producer
 # cd ingestion-kafka/producer
 # python3 producer.py
 
-Cela envoie des messages de la forme :  
+This sends messages like:
 > {"symbol": "AAPL", "price": 174.5}
 
-3. Lancer Spark Structured Streaming
+3. Launch Spark Structured Streaming
 # cd ingestion-kafka/spark
 # spark-submit kafka_to_delta.py
-Les données seront stockées dans data/finance_delta/ au format Delta Lake.
+The data will be stored in data/finance_delta/ in Delta Lake format.
 
-🚀 Auteur
 
-Nom : Amina ELBAYYADI
-Formation : Master Big Data & Intelligence Artificielle
+🚀 Author
+
+Name: Amina ELBAYYADI
+Program: Master’s in Big Data & Artificial Intelligence

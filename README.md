@@ -128,6 +128,11 @@ One of the best ways to get started contributing is by improving FinanceLake's d
 
 - FinanceLake's documentation is hosted at [FinanceLake](#)
 - **We have a separate GitHub repository for FinanceLack's documentation:** [github.com/FinanceLake/financelake-docs](https://github.com/FinanceLake/financelake-docs)
+## 🔧 Configuration de l'environnement
+
+1. Duplique le fichier `.env.example` et renomme-le en `.env` :
+   ```bash
+   cp .env.example .env
 
 ## ⌚ Roadmap
 
