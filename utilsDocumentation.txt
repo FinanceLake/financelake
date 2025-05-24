@@ -1,0 +1,42 @@
+  => Objective
+
+The goal of this issue is to modularize common data transformation logic used throughout the FinanceLake backend, enabling reusability, maintainability, and clarity. This includes operations such as:
+
+    - Computing technical indicators (EMA)
+
+    - Data normalization (Min-Max scaling)
+
+    - Data filtering (outlier removal)
+
+  => Scope:
+
+Create a utility module (financeLake/utils/) that includes:
+
+Transformation Type	Description:
+
+    - Indicators	 => Functions to compute technical metrics like Exponential Moving Average (EMA)
+    - Normalization  => Min-Max scaling to normalize input values to [0, 1]
+    - Filtering	     => Outlier removal using standard deviation or Z-score
+
+  => Directory Structure
+
+FinanceLake/utils/
+           |     ├── indicators.py       # calculate_ema
+           |     ├── normalization.py    # min_max_normalize
+           |     └── filters.py          # remove_outliers
+           /main.py
+
+
+  => Benefits:
+
+- Reusable: Same logic can be applied across ingestion, analytics, and visualization.
+
+- Testable: Easier to unit test transformations in isolation.
+
+- Clean: Removes clutter from core business logic (routes, pipelines).
+
+- Extendable: Easily add new transformations (RSI, MACD, log scaling).
+
+
+
+
