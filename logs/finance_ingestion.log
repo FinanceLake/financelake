@@ -1,0 +1,10 @@
+2025-05-22 14:05:00 ERROR Failed to connect to data source: Timeout occurred
+2025-05-22 14:06:15 ERROR Data format error: Unexpected JSON structure
+2025-05-22 14:07:30 ERROR Kafka producer failed: Broker not available
+2025-05-22 14:08:45 ERROR Disk space low: Less than 10% remaining
+2025-05-22 14:09:50 ERROR Authentication failed: Invalid credentials
+2025-05-22 14:10:20 ERROR Network unreachable: Cannot resolve hostname
+2025-05-22 14:11:05 ERROR Data ingestion halted: Null pointer exception in module X
+2025-05-22 14:12:30 ERROR Missing required field 'price' in incoming data
+2025-05-22 14:13:55 ERROR Retry limit exceeded for topic 'stock-data'
+2025-05-22 14:15:00 ERROR Unexpected shutdown: Ingestion process killed unexpectedly
