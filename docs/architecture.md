@@ -1,6 +1,6 @@
 # FinanceLake Big Data Architecture
 
-![Architecture Diagram](architecture-diagram.png Descriptions)
+![Architecture Diagram](architecture-diagram.png)
 
 ### 1. Data Sources
 
