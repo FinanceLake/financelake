@@ -12,3 +12,4 @@ while True:
     producer.send("finance-topic", value=data)
     print(f"Sent: {data}")
     time.sleep(5)
+#SSLSocket(socket.socket)
