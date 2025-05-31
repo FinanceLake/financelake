@@ -24,6 +24,20 @@ Whether you're a quant, data engineer, open-source maintainer, or trading enthus
 
 - 📥 **Data Ingestion**  
   Real-time and batch ingestion pipelines using **Apache Kafka**, **Apache NiFi**, and **API connectors** (e.g., Yahoo Finance, Alpha Vantage, Quandl, etc.)
+  
+  **Example: Multi-Asset Stock Data Producer (`stock-producer.py`)**
+
+  The `stock-producer.py` script, included in this repository, demonstrates live data ingestion for FinanceLake, a real-time financial data pipeline:
+
+  - **Source**: Fetches historical end-of-day stock data from Yahoo Finance using the `yfinance` library.
+  - **Multi-Asset**: Supports a configurable list of stock symbols (e.g., `AAPL`, `MSFT`, `GOOG`, `GC=F`).
+  - **Continuous Operation**: Runs in a loop, continuously fetching the latest data for the specified symbols.
+  - **Kafka Integration**: Publishes data to the `stock-data` Kafka topic, with each JSON message including a `symbol` field for easy identification.
+  - **Configuration**: Set the target Kafka broker using the `KAFKA_BROKER` environment variable (default: `localhost:9092`).
+  
+To run it: `python stock-producer.py` (ensure a Kafka broker and Zookeeper are running).
+
+This script serves as a practical example of an API connector feeding real-time data into FinanceLake.
 
 - ⚙️ **Big Data Processing**  
   Built on top of **Apache Spark**, **Hadoop**, and **Delta Lake** for scalable and resilient analytics.
