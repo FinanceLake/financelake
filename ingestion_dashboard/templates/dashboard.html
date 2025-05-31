@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ingestion Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   <style> /* Reset */
+body, h1, h2, h3, p, div, button {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 30px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status {
+    font-size: 24px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.status.running {
+    color: #28a745;
+}
+
+.status.paused {
+    color: #ffc107;
+}
+
+.status.error {
+    color: #dc3545;
+}
+
+.timestamp {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 15px;
+    margin-top: 10px;
+    line-height: 1.4;
+    background-color: #ffe9e9;
+    border-left: 4px solid #dc3545;
+    padding: 10px 15px;
+    border-radius: 4px;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-right: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button.start {
+    background-color: #28a745;
+    color: white;
+}
+
+button.pause {
+    background-color: #ffc107;
+    color: white;
+}
+ </style> 
+</head>
+<body>
+    <h1>Ingestion Dashboard</h1>
+
+    <div class="dashboard-card">
+        <div id="status" class="status">Loading...</div>
+        <div id="timestamp" class="timestamp">Loading...</div>
+        <div id="errors" class="error" style="display: none;">Loading...</div>
+    </div>
+
+    <button class="start" onclick="startIngestion()">Start</button>
+    <button class="pause" onclick="pauseIngestion()">Pause</button>
+
+    <script>
+        const socket = io();
+
+        function updateStatus(data) {
+            const statusElem = $('#status');
+            statusElem.text("Status: " + data.status);
+
+            // Update CSS class
+            statusElem.removeClass('running paused error');
+            if (data.status === 'Running') statusElem.addClass('running');
+            if (data.status === 'Paused') statusElem.addClass('paused');
+            if (data.status === 'Error') statusElem.addClass('error');
+
+            $('#timestamp').text("Last updated: " + data.last_updated);
+
+            if (data.errors.length > 0) {
+                $('#errors').show().html("Errors:<br>" + data.errors.join('<br>'));
+            } else {
+                $('#errors').hide();
+            }
+        }
+
+        socket.on('connect', function() {
+            console.log('Connected to server.');
+            socket.emit('request_status');
+        });
+
+        socket.on('status_update', function(data) {
+            updateStatus(data);
+        });
+
+        // Refresh every 2s
+        setInterval(() => {
+            socket.emit('request_status');
+        }, 2000);
+
+        function startIngestion() {
+            $.post('/start', {}, function(response) {
+                console.log(response.message);
+            });
+        }
+
+        function pauseIngestion() {
+            $.post('/pause', {}, function(response) {
+                console.log(response.message);
+            });
+        }
+    </script>
+</body>
+</html>
