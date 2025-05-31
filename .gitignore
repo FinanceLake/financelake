@@ -2,6 +2,8 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Env
 .env
 
 # Logs
@@ -18,4 +20,5 @@ __pycache__/
 # Dataset
 data-ingestion-kafka/data/creditcard.csv
 
-package-lock.json 
+# Node
+package-lock.json
