@@ -1,0 +1,104 @@
+{
+  "version": "1.0.0",
+  "bundle_type": "dashboard",
+  "timestamp": "2024-04-14T10:00:00Z",
+  "metadata": {
+    "name": "Stock Market Dashboard",
+    "description": "Financial data visualization dashboard showing stock prices, volume, and trends",
+    "created_by": "FinanceLake"
+  },
+  "dashboard": {
+    "dashboard_title": "Stock Market Dashboard",
+    "description": "Comprehensive view of stock market data with price trends and volume analysis",
+    "slug": "stock-market-dashboard",
+    "published": true,
+    "position_json": {
+      "CHART-1": {
+        "children": [],
+        "id": "CHART-1",
+        "meta": {
+          "chartId": 1,
+          "height": 50,
+          "sliceName": "Stock Price Timeline",
+          "width": 8
+        },
+        "type": "CHART"
+      },
+      "CHART-2": {
+        "children": [],
+        "id": "CHART-2",
+        "meta": {
+          "chartId": 2,
+          "height": 50,
+          "sliceName": "Trading Volume",
+          "width": 4
+        },
+        "type": "CHART"
+      },
+      "GRID_ID": {
+        "children": ["ROW-1"],
+        "id": "GRID_ID",
+        "type": "GRID"
+      },
+      "ROW-1": {
+        "children": ["CHART-1", "CHART-2"],
+        "id": "ROW-1",
+        "meta": {
+          "background": "BACKGROUND_TRANSPARENT"
+        },
+        "type": "ROW"
+      }
+    },
+    "json_metadata": {
+      "filter_scopes": {},
+      "default_filters": {},
+      "refresh_frequency": 0,
+      "timed_refresh_immune_slices": [],
+      "expanded_slices": {},
+      "label_colors": {},
+      "color_scheme": "supersetColors",
+      "shared_label_colors": {},
+      "color_scheme_domain": []
+    }
+  },
+  "charts": [
+    {
+      "slice_name": "Stock Price Timeline",
+      "viz_type": "line",
+      "params": {
+        "datasource": "stock_data_dashboard",
+        "viz_type": "line",
+        "x_axis": "timestamp",
+        "metrics": ["close", "open", "high", "low"],
+        "groupby": ["symbol"],
+        "time_range": "No filter",
+        "limit": 10000,
+        "order_desc": true,
+        "contribution": false,
+        "color_scheme": "bnbColors",
+        "show_legend": true,
+        "rich_tooltip": true,
+        "show_markers": false,
+        "line_interpolation": "linear"
+      }
+    },
+    {
+      "slice_name": "Trading Volume",
+      "viz_type": "bar",
+      "params": {
+        "datasource": "stock_data_dashboard",
+        "viz_type": "bar",
+        "x_axis": "timestamp",
+        "metrics": ["volume"],
+        "groupby": ["symbol"],
+        "time_range": "No filter",
+        "limit": 100,
+        "order_desc": true,
+        "contribution": false,
+        "color_scheme": "bnbColors",
+        "show_legend": true,
+        "rich_tooltip": true
+      }
+    }
+  ]
+}
