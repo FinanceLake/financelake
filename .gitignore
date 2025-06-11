@@ -1,1 +1,24 @@
-".env" 
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Environment files
+.env
+
+# Logs
+*.log
+/tmp/
+
+# OS files
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Dataset
+data-ingestion-kafka/data/creditcard.csv
+
+# Node.js
+package-lock.json
