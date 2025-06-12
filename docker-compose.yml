@@ -7,6 +7,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
     ports:
       - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
+    networks:
+      - financelake-network
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -19,6 +21,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
       KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - financelake-network
 
   spark:
     image: bitnami/spark:latest
@@ -27,11 +31,13 @@ services:
     ports:
       - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
       - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
+    networks:
+      - financelake-network
 
   superset:
     image: apache/superset
     ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
+      - "${SUPERSET_PORT}:${SUPERSET_PORT}"
     environment:
       SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
     depends_on:
@@ -42,6 +48,8 @@ services:
         superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
         superset init &&
         superset run -h 0.0.0.0 -p 8088"
+    networks:
+      - financelake-network
 
   postgres:
     image: postgres:15
@@ -53,7 +61,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-  
+    networks:
+      - financelake-network
+
   nifi:
     image: apache/nifi:2.3.0
     ports:
@@ -62,7 +72,42 @@ services:
       NIFI_WEB_HTTPS_PORT: ${NIFI_HTTPS_PORT}
     volumes:
       - nifi_data:/opt/nifi/data
+    networks:
+      - financelake-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: financelake-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - financelake-network
+
+  financelake-app:
+    build: .
+    container_name: financelake-app
+    ports:
+      - "5000:5000"
+    environment:
+      - REDIS_HOST=redis
+      - CACHE_TYPE=redis
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    networks:
+      - financelake-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   nifi_data:
+  redis_data:
+
+networks:
+  financelake-network:
+    driver: bridge
