@@ -1,85 +1,79 @@
 # Kafka Ingestion Demo – FinanceLake
 
-Ce dossier contient une démonstration fonctionnelle d'un pipeline d'ingestion temps réel avec **Kafka**, dans le cadre du projet FinanceLake.
+This directory contains a working demo of a real-time ingestion pipeline using **Apache Kafka**, as part of the FinanceLake project.
 
 ## ⚙️ Architecture
 
-- Kafka & Zookeeper tournent en local via Docker Compose  
-- Producteur Python envoie un message dans un topic Kafka  
-- Consommateur Python lit les messages du topic  
+- Kafka & Zookeeper run locally using Docker Compose (defined at the project root)
+- A Python producer sends messages to a Kafka topic
+- A Python consumer reads those messages from the topic
+- Configuration is handled via environment variables loaded with `python-dotenv` in a `config.py` file
 
-## 🧱 Prérequis
+## 🧱 Prerequisites
 
-- Docker installé  
-- Python 3 installé (`pip install kafka-python`)  
-- Port `9092` disponible pour Kafka  
+- Docker installed  
+- Python 3 installed  
+- Required packages: `kafka-python` and `python-dotenv`  
+- Port `9092` available for Kafka  
 
-## 🚀 Lancer le projet
+```bash
+pip install kafka-python python-dotenv
+```
 
-### 1. Démarrer les services Kafka & Zookeeper
+## 🚀 Getting Started
+
+### 1. Start Kafka & Zookeeper services
+
+From the project root, run:
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Vérifier que les conteneurs tournent
+### 2. Check if the containers are running
 
 ```bash
 docker ps
 ```
-Tu dois voir `kafka-test-kafka-1` et `kafka-test-zookeeper-1`.
+You should see `kafka-test-kafka-1` and `kafka-test-zookeeper-1` in the output.
 
-### 3. Exécuter le producteur Kafka
+### 3. Run the Kafka producer
 
 ```bash
 python kafka_producer.py
 ```
-Ce script envoie un message dans le topic Kafka (ex: `test-topic`).
+This script sends sample messages to the Kafka topic (e.g., `test-topic`).
 
-### 4. Exécuter le consommateur Kafka
+### 4. Run the Kafka consumer
 
 ```bash
 python kafka_consumer.py
 ```
-Ce script lit les messages du topic Kafka.
+This script reads and displays the messages from the Kafka topic.
 
-### 5. Arrêter les services
+### 5. Stop the services
 
 ```bash
 docker-compose down
 ```
 
-## 📁 Structure du projet
+## 📁 Project Structure
 
 ```
-kafka-test/
-├── assets/                # Captures d’écran et vidéos de démonstration
-│   ├── kafka_producer.png
-│   └── kafka_consumer.png
-├── docker-compose.yml     # Configuration Docker Compose (Kafka + Zookeeper)
-├── kafka_producer.py      # Script producteur Kafka en Python
-├── kafka_consumer.py      # Script consommateur Kafka en Python
-└── README.md              # Documentation du projet
+financeLake/
+├── .env.example           # Example environment file to configure variables
+├── docker-compose.yml     # Docker Compose (Kafka + Zookeeper) - at the root
+└── kafka-test/
+    ├── resources/         # Screenshots and demo video
+    │   ├── docker_ps.png
+    │   ├── kafka_producer.png
+    │   └── kafka_consumer.png
+    ├── config.py          # Loads environment variables
+    ├── kafka_producer.py  # Kafka producer script
+    ├── kafka_consumer.py  # Kafka consumer script
+    └── README.md          # This file
 ```
 
-## ✅ Étapes Git à suivre pour soumettre
+## 🔐 Notes
 
-```bash
-git add kafka-test/assets/
-git add kafka-test/README.md
-git commit -m "Ajout du README et des captures de démonstration Kafka"
-git push origin feature/abdourahim_ali
-```
-
----
-
-### 👍 Ce que tu dois faire maintenant :
-
-1. Copier-coller tout ce contenu dans le fichier `README.md` dans le dossier `kafka-test/`.  
-2. Mettre tes captures d’écran dans `kafka-test/assets/` (ex: `kafka_producer.png` et `kafka_consumer.png`).  
-3. Remplacer les liens ou ajouter une vidéo si besoin.  
-4. Faire ton commit & push.
-
----
-
-🎉 Félicitations, tu as terminé la démonstration d’ingestion Kafka dans FinanceLake !
+Make sure to copy `.env.example` to `.env` and update it with your real values when testing locally. The `.env` file should **not** be committed to version control.

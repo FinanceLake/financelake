@@ -1,8 +1,9 @@
-version: "3.8"
 
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    env_file:
+      - .env
     environment:
       ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
     ports:
@@ -10,6 +11,8 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    env_file:
+      - .env
     depends_on:
       - zookeeper
     ports:
@@ -17,11 +20,13 @@ services:
     environment:
       KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
       KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   spark:
     image: bitnami/spark:latest
+    env_file:
+      - .env
     environment:
       - SPARK_MODE=master
     ports:
@@ -30,8 +35,10 @@ services:
 
   superset:
     image: apache/superset
+    env_file:
+      - .env
     ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
+      - "${SUPERSET_PORT}:${SUPERSET_PORT}"
     environment:
       SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
     depends_on:
@@ -41,10 +48,12 @@ services:
         superset db upgrade &&
         superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
         superset init &&
-        superset run -h 0.0.0.0 -p 8088"
+        superset run -h 0.0.0.0 -p ${SUPERSET_PORT}"
 
   postgres:
     image: postgres:15
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

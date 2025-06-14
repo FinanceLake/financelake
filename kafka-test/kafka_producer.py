@@ -1,17 +1,17 @@
 from kafka import KafkaProducer
 import json
+import time
+from config import KAFKA_BROKER, KAFKA_TOPIC
 
-# Connexion au broker Kafka local
+# Connexion au broker Kafka
 producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
+    bootstrap_servers=KAFKA_BROKER,
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
-# Message à envoyer
-message = {"symbol": "AAPL", "price": 183.45}
-
-# Envoi dans le topic "test-topic"
-producer.send('test-topic', message)
+# Envoi d’un message unique (comme dans ta version)
+message = {"symbol": "AAPL", "price": 183.45, "timestamp": time.time()}
+producer.send(KAFKA_TOPIC, message)
 producer.flush()
 
-print("✅ Message envoyé avec succès !")
+print(f"✅ Message envoyé avec succès à {KAFKA_TOPIC} sur {KAFKA_BROKER}")
