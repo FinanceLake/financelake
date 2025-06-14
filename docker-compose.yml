@@ -51,6 +51,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+  
+  nifi:
+    image: apache/nifi:2.3.0
+    ports:
+      - "${NIFI_HTTPS_PORT}:${NIFI_HTTPS_PORT}"
+    environment:
+      NIFI_WEB_HTTPS_PORT: ${NIFI_HTTPS_PORT}
+    volumes:
+      - nifi_data:/opt/nifi/data
 
   nifi:
     image: apache/nifi:2.3.0
@@ -97,3 +106,4 @@ services:
 volumes:
   postgres_data:
   nifi_data:
+

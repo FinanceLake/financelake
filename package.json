@@ -1,0 +1,12 @@
+{
+  "name": "financelake",
+  "version": "1.0.0",
+  "description": "<div align=\"center\"> <br/> <img src=\"resources/img/logo.png\" width=\"120px\" alt=\"\"> <br/>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
