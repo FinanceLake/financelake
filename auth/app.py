@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request, g, make_response
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token,
     jwt_required, get_jwt_identity, decode_token, get_jwt
@@ -136,6 +136,14 @@ def auto_refresh_token():
                 new_access_token = create_access_token(identity=identity)
                 g.jwt_identity = identity
                 g.new_access_token = new_access_token
+                response = make_response()
+                response.set_cookie(
+                'access_token',
+                value=g.new_access_token,
+                httponly=True,
+                max_age=15 * 60
+                )
+                response.headers['X-New-Access-Token'] = g.new_access_token
                 return
             except ExpiredSignatureError:
                 return jsonify({"msg": "Refresh token expired"}), 401
@@ -147,17 +155,17 @@ def auto_refresh_token():
         return jsonify({"msg": str(e)})
     
 
-@app.after_request
-def set_new_access_token(response):
-    if hasattr(g, 'new_access_token'):
-        response.set_cookie(
-            'access_token',
-            value=g.new_access_token,
-            httponly=True,
-            max_age=15 * 60
-        )
-        response.headers['X-New-Access-Token'] = g.new_access_token
-    return response
+# @app.after_request
+# def set_new_access_token(response):
+#     if hasattr(g, 'new_access_token'):
+#         response.set_cookie(
+#             'access_token',
+#             value=g.new_access_token,
+#             httponly=True,
+#             max_age=15 * 60
+#         )
+#         response.headers['X-New-Access-Token'] = g.new_access_token
+#     return response
 
 @app.route('/kafka/topics', methods=['GET'])
 @jwt_required()
