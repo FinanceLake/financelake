@@ -24,7 +24,7 @@ So far, we agreed on the components for the data sources, the ingestion, the int
 ## Choice Explanation
 ### Lambda Architecture
 The Lambda Architecture is particularly well-suited for finance lake projects due to its ability to handle both real-time analytics and historical batch processing 
-while ensuring fault tolerance and scalability. It can handle **High-Velocity Market Data**, it balances **Accuracy** and **Latency**.
+while ensuring fault tolerance and scalability. It can handle **High-Velocity Market Data**; it balances **Accuracy** and **Latency**.
 
 ### Alpha Vantage API
 Alpha Vantage is a financial data API that provides real-time and historical stock, forex (FX), cryptocurrency, and economic data for developers, traders, and analysts. 
