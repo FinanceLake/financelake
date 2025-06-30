@@ -18,8 +18,3 @@ def calculate_ema(df, column_name, span=7):
        window_spec = Window.orderBy("date").rowsBetween(-span + 1, 0)
        df = df.withColumn("ema", avg(col(column_name)).over(window_spec))
        return df
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 6983711d69a56d536a4b462422f614a57e19e1c9

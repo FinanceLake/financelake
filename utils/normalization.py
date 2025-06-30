@@ -19,7 +19,3 @@ def min_max_normalize(df, column_name):
        # Normalisation : (x - min) / (max - min)
        df = df.withColumn("normalized", (col(column_name) - min_val) / (max_val - min_val))
        return df
-<<<<<<< HEAD
-
-=======
->>>>>>> 6983711d69a56d536a4b462422f614a57e19e1c9
