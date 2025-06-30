@@ -26,7 +26,7 @@ def remove_outliers(df, column_name, threshold=2):
     df = df.withColumn("zscore", spark_abs((col(column_name) - mean_val) / stddev_val))
 
     # Afficher les z-scores (debug)
-    print("⚠️ Vérification des Z-scores :")
+    print(" Vérification des Z-scores :")
     df.select("id", "date", column_name, "zscore").show()
 
     # Filtrer les lignes avec un Z-score inférieur au seuil

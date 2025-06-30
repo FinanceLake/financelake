@@ -15,14 +15,15 @@ data = [
 ]
 df = spark.createDataFrame(data, ["id", "date", "price"])
 
-# Tester calculate_ema
+
+# Tester "calculate_ema"
 ema_df = calculate_ema(df, "price", span=3)
 ema_df.show()
 
-# Tester min_max_normalize
+# Tester "min_max_normalize"
 norm_df = min_max_normalize(df, "price")
 norm_df.show()
 
-# Tester remove_outliers
+# Tester "remove_outliers"
 clean_df = remove_outliers(df, "price", threshold=3)
 clean_df.show()

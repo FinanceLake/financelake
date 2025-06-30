@@ -13,7 +13,7 @@ def min_max_normalize(df, column_name):
        Returns:
            Spark DataFrame avec une nouvelle colonne 'normalized'.
        """
-       # Calculer min et max
+       # Calculer "min et max"
        min_val = df.select(min(col(column_name))).first()[0]
        max_val = df.select(max(col(column_name))).first()[0]
        # Normalisation : (x - min) / (max - min)

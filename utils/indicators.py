@@ -10,7 +10,7 @@ def calculate_ema(df, column_name, span=7):
        Args:
            df: Spark DataFrame avec une colonne de dates et une colonne de valeurs.
            column_name: Nom de la colonne contenant les valeurs (ex. 'price').
-           span: Période pour l’EMA (par défaut 7).
+           span: Période pour l'EMA (par défaut 7).
        
        Returns:
            Spark DataFrame avec une nouvelle colonne 'ema'.
