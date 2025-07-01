@@ -7,7 +7,7 @@ Here is a diagram of our workflow :
 
 **Context** : 
 As members of the first year class of BigData and AI Masters, we organised a couple of online reunions to discuss the architecture that this Finance Lake project will follow 
-and came to the decision of adopting a Lambda Architecture (which is caracterised with a duel-pipeline, one for batch ingestion and processing and the other for streaming/real-time ingestion and processing).
+and came to the decision of adopting a Lambda Architecture (which is characterised with a dual-pipeline, one for batch ingestion and processing and the other for streaming/real-time ingestion and processing).
 So far, we agreed on the components for the data sources, the ingestion, the intermediate storage and the processing phases. 
 
 ## Components
