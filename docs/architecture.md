@@ -15,7 +15,7 @@ So far, we agreed on the components for the data sources, the ingestion, the int
 - **Data Ingestion** : Since we're adopting a Lambda Architecture, we decided to use Apache Kafka for stream ingestion and Apache Nifi for batch ingestion.
 - **Intermediate Storage** : This phase is mainly about storing the ingested data before processing it for better tolerance to process failure. And we came to the conclusion of using two different Kafka topics, one for streaming data and the other for batch data.
 - **Processing** : For processing, we agreed to go for real-time processing only since this is a Finance Lake project and we figured most analytical processes will be real-time processes.
-- **Data Storage** : (WIP). We have'nt decided on which storage system to use since it will eventually depend on the results we get from the processing phase, so its either going to be a Data Warehouse fro analytics and reports, a Data Lake for raw data or a Relationnal Database for structured data.
+- **Data Storage** : (WIP). We haven't decided on which storage system to use since it will eventually depend on the results we get from the processing phase, so it's either going to be a Data Warehouse for analytics and reports, a Data Lake for raw data or a Relational Database for structured data.
 - **Analytics** : (WIP). In this phase, we're talking about using analytical engines like Apache Spark or Presto/Trino, Machine Learning like Scikit-learn or TensorFlow and Visualisation like PowerBI and Tableau.
 - **APIs** : (WIP). This phase is about Exposition APIs like Fast API or Spring Boot for RESTful APIs and GraphQL for flexible queries.
 - **FrontEnd** : (WIP). A graphical user interface for the project's application using React.js, javascript or Dash.
