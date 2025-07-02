@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Ingestion Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+   <style>  </style> 
+</head>
+<body>
+    <h1>Ingestion Dashboard</h1>
+
+    <div class="dashboard-card">
+        <div id="status" class="status">Loading...</div>
+        <div id="timestamp" class="timestamp">Loading...</div>
+        <div id="errors" class="error" style="display: none;">Loading...</div>
+    </div>
+
+    <button class="start" onclick="startIngestion()">Start</button>
+    <button class="pause" onclick="pauseIngestion()">Pause</button>
+
+    <script>
+        const socket = io();
+
+        function updateStatus(data) {
+            const statusElem = $('#status');
+            statusElem.text("Status: " + data.status);
+
+            // Update CSS class
+            statusElem.removeClass('running paused error');
+            if (data.status === 'Running') statusElem.addClass('running');
+            if (data.status === 'Paused') statusElem.addClass('paused');
+            if (data.status === 'Error') statusElem.addClass('error');
+
+            $('#timestamp').text("Last updated: " + data.last_updated);
+
+            if (data.errors.length > 0) {
+                $('#errors').show().html("Errors:<br>" + data.errors.join('<br>'));
+            } else {
+                $('#errors').hide();
+            }
+        }
+
+        socket.on('connect', function() {
+            console.log('Connected to server.');
+            socket.emit('request_status');
+        });
+
+        socket.on('status_update', function(data) {
+            updateStatus(data);
+        });
+
+        // Refresh every 2s
+        setInterval(() => {
+            socket.emit('request_status');
+        }, 2000);
+
+        function startIngestion() {
+            $.post('/start', {}, function(response) {
+                console.log(response.message);
+            });
+        }
+
+        function pauseIngestion() {
+            $.post('/pause', {}, function(response) {
+                console.log(response.message);
+            });
+        }
+    </script>
+</body>
+</html>
