@@ -1,0 +1,60 @@
+{
+  "flowContents": {
+    "processors": [
+      {
+        "name": "GetFile",
+        "type": "org.apache.nifi.processors.standard.GetFile",
+        "config": {
+          "Input Directory": "./data_ingestion/batch/data/",
+          "Keep Source File": "false"
+        }
+      },
+      {
+        "name": "ConvertRecord",
+        "type": "org.apache.nifi.processors.standard.ConvertRecord",
+        "config": {
+          "Record Reader": "CSVReader",
+          "Record Writer": "JsonRecordSetWriter"
+        }
+      },
+      {
+        "name": "PublishKafka",
+        "type": "org.apache.nifi.processors.kafka.pubsub.PublishKafka_2_6",
+        "config": {
+          "Kafka Brokers": "localhost:9092",
+          "Topic Name": "batch_data"
+        }
+      },
+      {
+        "name": "MoveFile",
+        "type": "org.apache.nifi.processors.standard.MoveFile",
+        "config": {
+          "Directory": "./data_ingestion/batch/data/processed/"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "source": { "id": "GetFile_processor_id", "type": "PROCESSOR" },
+        "destination": {
+          "id": "ConvertRecord_processor_id",
+          "type": "PROCESSOR"
+        },
+        "selectedRelationships": ["success"]
+      },
+      {
+        "source": { "id": "ConvertRecord_processor_id", "type": "PROCESSOR" },
+        "destination": {
+          "id": "PublishKafka_processor_id",
+          "type": "PROCESSOR"
+        },
+        "selectedRelationships": ["success"]
+      },
+      {
+        "source": { "id": "PublishKafka_processor_id", "type": "PROCESSOR" },
+        "destination": { "id": "MoveFile_processor_id", "type": "PROCESSOR" },
+        "selectedRelationships": ["success"]
+      }
+    ]
+  }
+}
