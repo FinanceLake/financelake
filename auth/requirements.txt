@@ -1,0 +1,6 @@
+Flask==2.3.3
+Flask-JWT-Extended==4.6.0
+PyMySQL==1.1.0
+kafka-python==2.0.2
+PyJWT==2.8.0
+Werkzeug==2.3.7
