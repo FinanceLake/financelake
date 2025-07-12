@@ -180,3 +180,16 @@ python producer.py
 4. Deploy the HDFS connector
 
 curl -X POST -H "Content-Type: application/json" --data @hdfs-sink.json http://localhost:8083/connectors
+
+## 📊 Dashboard Setup (Apache Superset)
+
+### Prerequisites
+- Docker and Docker Compose installed
+- Stock data processed and available in `data/processed/` directory
+
+### Quick Start
+
+1. **Prepare the data for Superset:**
+   ```bash
+   cd financelake
+   python scripts/prepare_data_for_superset.py
