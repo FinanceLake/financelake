@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: financelake_redis
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: financelake_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  superset:
+    image: apache/superset:3.0.0
+    container_name: financelake_superset
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SUPERSET_CONFIG_PATH: /app/superset_config.py
+      SUPERSET_HOME: /app/superset
+      DATABASE_DB: superset
+      DATABASE_HOST: postgres
+      DATABASE_PASSWORD: superset
+      DATABASE_USER: superset
+      DATABASE_PORT: 5432
+      DATABASE_DIALECT: postgresql
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./superset_config.py:/app/superset_config.py
+      - ./init-superset.sh:/app/init-superset.sh
+      - ../data:/app/data
+    command: >
+      bash -c "
+        pip install psycopg2-binary &&
+        pip install pyarrow &&
+        pip install duckdb-engine &&
+        /app/init-superset.sh &&
+        superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
+      "
+
+volumes:
+  postgres:
+  redis:
