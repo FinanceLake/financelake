@@ -1,2 +1,13 @@
 yfinance
 kafka
+dash
+plotly
+pandas
+yfinance
+requests
+pytest
+fastapi
+uvicorn
+kafka-python
+pydantic-settings
+pytest-dash
