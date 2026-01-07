@@ -19,3 +19,12 @@ __pycache__/
 data-ingestion-kafka/data/creditcard.csv
 
 package-lock.json 
+
+# jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# model checkpoints
+checkpoints/
+
+# Terminal cache
+financelake_terminal/__pycache__
