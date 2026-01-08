@@ -1,68 +1,71 @@
 version: "3.8"
 
 services:
+  # ZOOKEEPER
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
+      - "2181:2181"
 
+  # KAFKA
   kafka:
     image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
     depends_on:
       - zookeeper
     ports:
-      - "${KAFKA_PORT}:${KAFKA_PORT}"
+      - "9092:9092"
     environment:
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  spark:
-    image: bitnami/spark:latest
-    environment:
-      - SPARK_MODE=master
-    ports:
-      - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
-      - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
 
-  superset:
-    image: apache/superset
-    ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
+  spark-master:
+    build: ./spark
+    container_name: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+      SPARK_MODE: master
+    ports:
+      - "8080:8080"   # UI Master
+      - "7077:7077"   # Service Spark
+      - "4040:4040"
     depends_on:
-      - spark
-    command: >
-      /bin/bash -c "
-        superset db upgrade &&
-        superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
-        superset init &&
-        superset run -h 0.0.0.0 -p 8088"
+      - kafka
+    volumes:
+      - ./spark:/app
+      - ./delta:/delta
 
-  postgres:
-    image: postgres:15
+  # SPARK WORKER
+  spark-worker:
+    build: ./spark
+    container_name: spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      SPARK_MODE: worker
     ports:
-      - "5432:5432"
-  
-  nifi:
-    image: apache/nifi:2.3.0
-    ports:
-      - "${NIFI_HTTPS_PORT}:${NIFI_HTTPS_PORT}"
-    environment:
-      NIFI_WEB_HTTPS_PORT: ${NIFI_HTTPS_PORT}
+      - "8081:8081"   # UI Worker
+    depends_on:
+      - spark-master
     volumes:
-      - nifi_data:/opt/nifi/data
+      - ./spark:/app 
+      - ./delta:/delta 
+
+  # PRODUCTEUR DE DONNÉES
+  producer:
+    build: ./producer
+    container_name: producer
+    depends_on:
+      - kafka
+    volumes:
+      - ./producer:/app
 
 volumes:
-  postgres_data:
-  nifi_data:
+  delta:
