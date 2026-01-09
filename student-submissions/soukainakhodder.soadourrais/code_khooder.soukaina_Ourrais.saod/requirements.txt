@@ -1,0 +1,18 @@
+pyspark==3.5.0
+kafka-python==2.0.2
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+findspark>=2.0.0
+pyarrow>=12.0.0
+setuptools>=65.0.0
+
+# Delta Lake
+delta-spark==2.4.0
+
+# UI Dependencies
+streamlit>=1.28.0
+plotly>=5.17.0
+watchdog>=3.0.0
+

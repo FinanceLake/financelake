@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.pyc
+
+# Spark
+metastore_db/
+derby.log
+spark-warehouse/
+
+# Project specific - Generated data
+stream_data/
+test_stream_data/
+test_stream_data2/
+output/
+checkpoints/
+screenshots/*.png
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
