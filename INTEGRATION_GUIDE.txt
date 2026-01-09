@@ -1,0 +1,23 @@
+
+FINANCELAKE WITH YFINANCE + DELTA LAKE
+====================================
+Now using ONLY yfinance (no API key needed, no rate limits for normal use).
+
+BENEFITS:
+- Real historical prices
+- Real annual fundamentals (revenue, net income, EPS for last ~4 years)
+- No Alpha Vantage rate limits!
+- Native Delta Lake tables
+
+REQUIREMENTS:
+pip install yfinance deltalake pandas
+
+READING TABLES:
+from deltalake import DeltaTable
+dt = DeltaTable('data/gold/metrics/table')
+df = dt.to_pandas()
+
+FUTURE IMPROVEMENTS:
+- Add time.sleep(1) between ticker calls if you fetch many symbols
+- For incremental loads: change mode='append' and implement merging
+- Add quarterly fundamentals via ticker.quarterly_income_stmt
