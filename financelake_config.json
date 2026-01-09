@@ -1,0 +1,16 @@
+{
+  "setup_date": "2026-01-08T14:31:23.317860",
+  "data_locations": {
+    "bronze": "data/bronze/",
+    "silver": "data/silver/",
+    "gold": "data/gold/"
+  },
+  "api_sources": {
+    "stocks": "yfinance (Yahoo Finance)",
+    "financials": "alpha-vantage"
+  },
+  "real_data": {
+    "stocks": 35,
+    "financials": 0
+  }
+}
