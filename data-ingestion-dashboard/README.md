@@ -2,11 +2,11 @@
 
 FinanceLake is an **end-to-end Big Data Lakehouse project** designed for **real-time financial data ingestion, processing, analytics, and visualization**.
 
-The platform leverages **Apache Kafka, Apache Spark, Delta Lake, and Streamlit**, following a **Bronze / Silver / Gold** Lakehouse architecture, and integrates a **machine learning module** for next-day price prediction.
+The platform leverages **Apache Kafka, Apache Spark, Delta Lake, and Streamlit**, following a **Bronze / Silver / Gold** Lakehouse architecture, and integrates a **Deep learning module** for next-day price prediction.
 
 ## 🖼️ Global Architecture
 
-![FinanceLake Architecture](..resources/images/architecture.PNG)
+![FinanceLake Architecture](resources/images/architecture.png)
 
 ## 🏗️ Architecture Overview
 
@@ -83,7 +83,7 @@ FinanceLake follows a **modern Lakehouse architecture**:
 
 ---
 
-## 🤖 Machine Learning Module
+## 🤖 Deep learning Learning Module
 
 - **Model type:** LSTM
 - **Framework:** TensorFlow / Keras
