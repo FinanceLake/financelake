@@ -1,0 +1,12 @@
+{
+  "name": "hdfs-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.hdfs.HdfsSinkConnector",
+    "topics": "finance-topic",
+    "hdfs.url": "hdfs://localhost:9000",
+    "flush.size": "3",
+    "format.class": "io.confluent.connect.hdfs.json.JsonFormat",
+    "hadoop.conf.dir": "/etc/hadoop/conf",
+    "tasks.max": "1"
+  }
+}

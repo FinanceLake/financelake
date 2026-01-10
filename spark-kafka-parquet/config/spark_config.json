@@ -1,0 +1,7 @@
+{
+  "bootstrap_servers": "localhost:9092",
+  "topic": "stock-data",
+  "parquet_path": "output/parquet_data",
+  "checkpoint_path": "output/checkpoint",
+  "trigger_interval": "10 seconds"
+}
