@@ -6,7 +6,11 @@
 # FinanceLake
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat&logo=github&color=2370ff&labelColor=454545)](http://makeapullrequest.com)
+<<<<<<< HEAD
+[![unit-test](https://github.com/apache/incubator-devlake/actions/workflows/test.yml/badge.svg)](https://github.com/FinanceLake/financelake/actions/workflows/test.yml)
+=======
 [![unit-test]()](https://github.com/FinanceLake/financelake/actions/workflows/test.yml)
+>>>>>>> upstream/main
 [![Join us on Discord](https://img.shields.io/badge/Join_Us_on-Discord-5865F2?style=flat&logo=discord&logoColor=white&labelColor=2C2F33)](https://discord.gg/rP2dNEFJ4Y)
 
 </div>
@@ -95,7 +99,11 @@ Comming soon !!
 ## 🚀 Getting Started
 
 ### Installation
+<<<<<<< HEAD
+You can set up Apache DevLake by following our step-by-step instructions for either Docker Compose or Helm. Feel free to [ask the community](#💙-community) if you get stuck at any point.
+=======
 You can set up  FinanceLake by following our step-by-step instructions for either Docker Compose or Helm. Feel free to [ask the community](#💙-community) if you get stuck at any point.
+>>>>>>> upstream/main
 
 - [Install via Docker Compose](#)
 - [Install via Helm](#)
@@ -108,11 +116,19 @@ Please see [detailed usage instructions](#). Here's an overview on how to get st
 ## Contributing
 Please read the [contribution guidelines](#) before you make contribution. The following docs list the resources you might need to know after you decided to make contribution.
 
+<<<<<<< HEAD
+- [Create an Issue](#): Report a bug or feature request to Apache DevLake
+- [Submit a PR](#): Start with [good first issues](#) or [issues with no assignees](#)
+- [Join Mailing list](#): Initiate or participate in project discussions on the mailing list
+- [Write a Blog](#): Write a blog to share your use cases about Apache DevLake
+- [Develop a Plugin](#):  Integrate Apache DevLake with more data sources as [requested by the community](#)
+=======
 - [Create an Issue](#): Report a bug or feature request to FinanceLake
 - [Submit a PR](#): Start with [good first issues](#) or [issues with no assignees](#)
 - [Join Mailing list](#): Initiate or participate in project discussions on the mailing list
 - [Write a Blog](#): Write a blog to share your use cases about FinanceLake
 - [Develop a Plugin](#):  Integrate FinanceLake with more data sources as [requested by the community](#)
+>>>>>>> upstream/main
 
 ### 👩🏾‍💻 Contributing Code
 
@@ -138,6 +154,8 @@ One of the best ways to get started contributing is by improving FinanceLake's d
 Message us on <a href="https://discord.gg/rP2dNEFJ4Y" target="_blank">Discord</a>
 
 ## 📄 License<a id="license"></a>
+<<<<<<< HEAD
+=======
 
 
 
@@ -180,3 +198,4 @@ python producer.py
 4. Deploy the HDFS connector
 
 curl -X POST -H "Content-Type: application/json" --data @hdfs-sink.json http://localhost:8083/connectors
+>>>>>>> upstream/main

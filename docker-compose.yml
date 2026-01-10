@@ -53,6 +53,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+<<<<<<< HEAD
+
+volumes:
+  postgres_data:
+=======
   
   nifi:
     image: apache/nifi:2.3.0
@@ -66,3 +71,4 @@ services:
 volumes:
   postgres_data:
   nifi_data:
+>>>>>>> upstream/main
