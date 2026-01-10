@@ -160,7 +160,8 @@ financelake/
 2️⃣ Start Kafka
 
 ```bash
-kafka-server-start.bat config/server.properties
+kafka-server-start.bat .\config\kraft\server.properties
+
 
 3️⃣ Create Kafka Topic
 
