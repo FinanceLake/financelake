@@ -6,7 +6,7 @@ The platform leverages **Apache Kafka, Apache Spark, Delta Lake, and Streamlit**
 
 ## 🖼️ Global Architecture
 
-![FinanceLake Architecture](assets/architecture.png)
+![FinanceLake Architecture](data-ingestion-dashboard\assets\architecture.PNG)
 
 ## 🏗️ Architecture Overview
 
