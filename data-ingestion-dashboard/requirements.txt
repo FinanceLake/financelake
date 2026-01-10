@@ -1,0 +1,10 @@
+
+pyspark
+kafka-python
+delta-spark
+pandas
+matplotlib
+tensorflow
+joblib
+scikit-learn
+streamlit

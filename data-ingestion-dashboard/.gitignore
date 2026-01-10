@@ -1,0 +1,76 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+env/
+ENV/
+
+# =========================
+# Jupyter / IDE
+# =========================
+.ipynb_checkpoints/
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Spark / Hadoop
+# =========================
+spark-warehouse/
+metastore_db/
+derby.log
+*.crc
+
+# =========================
+# =========================
+data/
+financelake/
+C:/data/
+*/_delta_log/
+
+# =========================
+# =========================
+kafka-logs/
+zookeeper-data/
+
+# =========================
+# =========================
+.streamlit/
+
+
+# =========================
+ analytics/models/*.h5
+ analytics/models/*.gz
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+*.tmp
+*.bak
+
+# =========================
+# System specific
+# =========================
+*.swp
+
+producer_error.log
