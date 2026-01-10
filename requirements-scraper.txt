@@ -1,0 +1,6 @@
+requests
+kafka-python
+yfinance
+dotenv
+# defeatbeta-api
+# stockdex
