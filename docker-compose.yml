@@ -1,68 +1,143 @@
-version: "3.8"
-
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+  # --- INFRASTRUCTURE ---
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v23.2.14
+    container_name: redpanda
     ports:
-      - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    depends_on:
-      - zookeeper
-    ports:
-      - "${KAFKA_PORT}:${KAFKA_PORT}"
-    environment:
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  spark:
-    image: bitnami/spark:latest
-    environment:
-      - SPARK_MODE=master
-    ports:
-      - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
-      - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
-
-  superset:
-    image: apache/superset
-    ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
-    environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-    depends_on:
-      - spark
-    command: >
-      /bin/bash -c "
-        superset db upgrade &&
-        superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
-        superset init &&
-        superset run -h 0.0.0.0 -p 8088"
-
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - "9094:9094"
+      - "19094:19094"
+    command:
+      - redpanda start
+      - --smp 1
+      - --overprovisioned
+      - --kafka-addr internal://0.0.0.0:9094,external://0.0.0.0:19094
+      - --advertise-kafka-addr internal://redpanda:9094,external://localhost:19094
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      # Removed auth flag
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - redpanda_data:/var/lib/redpanda/data
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy|Unhealthy'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    container_name: minio
     ports:
-      - "5432:5432"
-  
-  nifi:
-    image: apache/nifi:2.3.0
-    ports:
-      - "${NIFI_HTTPS_PORT}:${NIFI_HTTPS_PORT}"
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      NIFI_WEB_HTTPS_PORT: ${NIFI_HTTPS_PORT}
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
     volumes:
-      - nifi_data:/opt/nifi/data
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb --ignore-existing myminio/finance-lake;
+      /usr/bin/mc mb --ignore-existing myminio/mlflow;
+      exit 0;
+      "
+
+  # --- SPARK (SINGLE NODE MODE - The Fix) ---
+  spark-streaming:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    container_name: spark-streaming
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - AWS_REGION=us-east-1
+      - KAFKA_BROKER=redpanda:9094
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./data/mlruns:/mlruns
+    command: tail -f /dev/null
+    # command: >
+    #   spark-submit 
+    #   --master "local[*]" 
+    #   --driver-memory 2g 
+    #   --conf spark.driver.maxResultSize=1g
+    #   --conf spark.driver.extraJavaOptions=-Dlog4j.configuration=file:/opt/bitnami/spark/conf/log4j.properties
+    #   /app/src/processing/spark_streaming_main.py
+
+  # --- APPS ---
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile.scraper
+    container_name: scraper
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      - KAFKA_BROKER=redpanda:9094
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONPATH=/app/src
+      - AWS_ACCESS_KEY_ID=minioadmin
+      - AWS_SECRET_ACCESS_KEY=minioadmin
+      - S3_ENDPOINT=http://minio:9000
+    depends_on:
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+
+  # mlflow:
+  #   image: ghcr.io/mlflow/mlflow:v2.10.0
+  #   container_name: mlflow
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     # Map host data/mlruns to container /mlruns (Root level is safer)
+  #     - ./data/mlruns:/mlruns
+  #   # Point backend store to /mlruns
+  #   command: mlflow ui --host 0.0.0.0 --port 5000 --backend-store-uri file:///mlruns
 
 volumes:
-  postgres_data:
-  nifi_data:
+  minio_data:
+    driver: local
+  redpanda_data:
+    driver: local
+  spark_data:
+    driver: local
+
+networks:
+  default:
+    name: financelake-net

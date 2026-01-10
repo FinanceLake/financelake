@@ -1,0 +1,46 @@
+# Use the official image (already contains PySpark 3.4.0)
+FROM apache/spark-py:v3.4.0
+
+# Switch to root to install system deps
+USER root
+
+WORKDIR /app
+
+# 1. System Deps: Install & Clean in one layer to keep image small
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Copy JARs (These change rarely)
+COPY jars /opt/spark/jars/
+
+# 3. SENIOR OPTIMIZATION: BuildKit Cache & CPU-Only Torch
+# This mounts a local cache for pip. If you rebuild, it uses the cache.
+# --index-url points to the CPU-only repo (Small download).
+# RUN --mount=type=cache,target=/root/.cache/pip \
+#     pip install --no-cache-dir \
+#     torch torchvision torchaudio \
+#     --index-url https://download.pytorch.org/whl/cpu
+
+# 4. Install other Python deps
+# Ensure 'pyspark' and 'torch' are REMOVED from this file!
+COPY requirements-spark.txt .
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir -r requirements-spark.txt
+
+# 5. Copy Source Code (Changes most frequently, so it goes last)
+COPY src /app/src
+
+# 6. Runtime Directories
+RUN mkdir -p /app/logs /app/data /app/checkpoints /app/mlruns
+
+# 7. Environment
+ENV PYTHONPATH=/app:/app/src:$PYTHONPATH
+
+# Command
+# CMD ["spark-submit", \
+#     "--driver-memory", "2g", \
+#     "--executor-memory", "2g", \
+#     "--conf", "spark.driver.extraJavaOptions=-Dlog4j.configuration=file:/opt/spark/conf/log4j.properties", \
+#     "/app/src/processing/spark_streaming_main.py"]
