@@ -14,95 +14,67 @@
 <div align="left">
 
 ## What is FinanceLake?
-[FinanceLake](#) is an **open-source financial data platform** that ingests, analyzes, and visualizes market and financial data — similar in ambition to platforms like Bloomberg Terminal, but powered by open technologies.
+[FinanceLake](#) is an **open-source financial data platform** that allows you to ingest, process, analyze, and visualize real-time stock market data.
 
-Whether you're a quant, data engineer, open-source maintainer, or trading enthusiast, **FinanceLake** offers a scalable and intelligent data stack to support **real-time insights**, **financial research**, and **data-driven decision-making**.
+It includes two main components in this project:
+- Yahoo Finance Kafka Producer : retrieves stock prices in real-time and sends them to Kafka.
+- Delta Lake Stock Analyzer : a Spark streaming pipeline that processes Kafka data through Bronze → Silver → Gold layers, trains ML models, and simulates trading strategies using reinforcement learning.
 
+FinanceLake provides a scalable, intelligent platform for **real-time financial insights**, **quantitative research**, and **data-driven decision-making**.
 ---
 
 ## 🚀 Features
 
-- 📥 **Data Ingestion**  
-  Real-time and batch ingestion pipelines using **Apache Kafka**, **Apache NiFi**, and **API connectors** (e.g., Yahoo Finance, Alpha Vantage, Quandl, etc.)
+- **Kafka Producer**
+  - Real-time stock price ingestion from Yahoo Finance
+  - Automatic fallback to simulated data if real data fails
+  - Sends JSON data to Kafka topic stock_prices
+  - Tracks multiple symbols: AAPL, GOOGL, MSFT, AMZN, TSLA, META, NFLX, NVDA
+  - Docker-ready for easy deployment
+  - [See detailed README](./producer/README.md)
 
-- ⚙️ **Big Data Processing**  
-  Built on top of **Apache Spark**, **Hadoop**, and **Delta Lake** for scalable and resilient analytics.
-
-- 📈 **Advanced Analytics**  
-  Analyze financial trends, compute indicators, perform backtesting, and build custom financial metrics.
-
-- 📊 **Interactive Visualization**  
-  Visual dashboards powered by **Grafana**, **Apache Superset**, or **Streamlit**.
-
-- 🧠 **Query Engine**  
-  Ask questions and get answers using a simple SQL-like interface or a natural language layer (NLQ) with optional LLM integration.
-
-- 📡 **Data APIs**  
-  REST & GraphQL APIs to expose insights and dashboards to downstream systems or external apps.
+- **Delta Lake Stock Analyzer**
+  - Data Lakehouse architecture (Bronze → Silver → Gold)
+  - Bronze: raw Kafka ingestion
+  - Silver: data cleaning and enrichment
+  - Gold: aggregations for ML and RL
+  - Transactional storage using Delta Lake
+  - Machine Learning (Logistic Regression) for trend prediction
+  - Reinforcement Learning (Q-learning) for portfolio simulation
+  - Continuous pipeline execution via Spark Streaming
+  - [See detailed README](./spark/README.md)
 
 ---
 
-## 💡 Use Cases
+## Requirements
+- Docker
 
-- Market trend monitoring for trading teams
-- Quantitative research and strategy testing
-- Portfolio performance visualization
-- Risk metrics computation
-- Real-time financial data streaming and alerting
+## Installation & Setup
+Start the project using Docker:
 
-## 🎯 What can be accomplished with FinanceLake?
+```bash
+# Start all Docker containers
+docker compose up -d
 
-FinanceLake empowers users to unlock value from vast streams of financial and economic data. Here’s what you can achieve:
+# Check running containers
+docker ps
 
-### 🧠 Derive Actionable Insights
-- Track price movements, volatility, and trends across global markets
-- Identify leading/lagging indicators to guide investment decisions
-- Measure performance against custom benchmarks or indices
+# Create a Docker network for FinanceLake (if not already created)
+docker network create finance-net
 
-### 📈 Build & Test Trading Strategies
-- Backtest strategies using historical tick/ohlcv data
-- Generate buy/sell signals using technical indicators (RSI, MACD, EMA…)
-- Evaluate drawdown, Sharpe ratio, beta, and other risk metrics
+# Connect Kafka and Zookeeper containers to the network
+docker network connect finance-net kafka
+docker network connect finance-net zookeeper
+```
 
-### 📊 Visualize and Monitor in Real Time
-- Build dynamic dashboards to monitor positions, portfolios, and KPIs
-- Stream live feeds for asset prices, news sentiment, or macro indicators
-- Trigger alerts on thresholds or anomalies (via webhook, email, Slack)
-
-### 🔎 Query Like a Pro
-- Explore structured and unstructured financial data using SQL or natural language
-- Query fundamentals, earnings, economic events, ESG scores, and more
-- Slice and dice data per sector, geography, or custom segments
-
-### 🏗️ Build Custom Financial Applications
-- Create custom dashboards for hedge funds, fintech apps, or research teams
-- Feed data into machine learning pipelines (e.g., predictive models)
-- Connect external systems (trading bots, ML models, BI tools) via API
-
-### 🧩 Extend and Contribute
-- Add custom connectors to new data sources (e.g., crypto exchanges, alt-data)
-- Contribute notebooks, indicators, or data visualizations
-- Help shape the roadmap of an open, transparent financial platfor
-
-## 👉 Live Demos
-
-Comming soon !!
-
-## 💪 Supported Data Sources
-
-Comming soon !!
-
-## 🚀 Getting Started
-
-### Installation
-You can set up  FinanceLake by following our step-by-step instructions for either Docker Compose or Helm. Feel free to [ask the community](#💙-community) if you get stuck at any point.
-
-- [Install via Docker Compose](#)
-- [Install via Helm](#)
-
-## 🤓 Usage
-
-Please see [detailed usage instructions](#). Here's an overview on how to get started using FinanceLake.
+## Pipeline Workflow
+- Continuous ingestion of Kafka data into Bronze layer
+- Cleaning and enrichment into Silver layer
+- Analytical aggregations into Gold layer
+- Every 60 seconds:
+  - Train the ML model and compute AUC
+  - Train the RL model and update portfolio value
+- Graceful shutdown via CTRL + C
 
 
 ## Contributing
@@ -116,9 +88,9 @@ Please read the [contribution guidelines](#) before you make contribution. The f
 
 ### 👩🏾‍💻 Contributing Code
 
-If you plan to contribute code to FinanceLake, we have instructions on how to get started with setting up your Development environemtn.
+If you plan to contribute code to FinanceLake, we have instructions on how to get started with setting up your Development environment.
 
-- [Developer Setup Instructions](#)
+- [Developer Setup Instructions](#)environment
 - [Development Workflow](#)
 
 
@@ -127,7 +99,7 @@ If you plan to contribute code to FinanceLake, we have instructions on how to ge
 One of the best ways to get started contributing is by improving FinanceLake's documentation. 
 
 - FinanceLake's documentation is hosted at [FinanceLake](#)
-- **We have a separate GitHub repository for FinanceLack's documentation:** [github.com/FinanceLake/financelake-docs](https://github.com/FinanceLake/financelake-docs)
+- **We have a separate GitHub repository for FinanceLake's documentation:** [github.com/FinanceLake/financelake-docs](https://github.com/FinanceLake/financelake-docs)
 
 ## ⌚ Roadmap
 
@@ -138,45 +110,3 @@ One of the best ways to get started contributing is by improving FinanceLake's d
 Message us on <a href="https://discord.gg/rP2dNEFJ4Y" target="_blank">Discord</a>
 
 ## 📄 License<a id="license"></a>
-
-
-
-## 🔧 Environment Configuration
-
-Before running the project, configure your environment variables.
-
-1. Copy the `.env.example` file and create your own `.env` file:
-
-```bash
-cp .env.example .env
-```
-2. Edit the .env file and fill in your specific configuration:
-
--DB_HOST:		Database host (e.g., localhost)
--KAFKA_BROKER: 		Kafka broker address
--SPARK_MASTER		Spark master URL
--API_KEY:		Your API key
--DATA_SOURCE_URL:	URL to fetch data from
--RAW_DATA_PATH:		Path for storing raw data
--DASHBOARD_USER:	Dashboard login user
--LOG_LEVEL:		Logging level (e.g., INFO, DEBUG)
-
-
-# Steps to execute Kafka & HDFS:
-
-1. Start Kafka & Zookeeper
-
-bin/zookeeper-server-start.sh config/zookeeper.properties
-bin/kafka-server-start.sh config/server.properties
-
-2. Start HDFS 
-
-Make sure HDFS is running on localhost:9000.
-
-3. Start the Kafka producer
-
-python producer.py
-
-4. Deploy the HDFS connector
-
-curl -X POST -H "Content-Type: application/json" --data @hdfs-sink.json http://localhost:8083/connectors

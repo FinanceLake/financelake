@@ -19,3 +19,8 @@ __pycache__/
 data-ingestion-kafka/data/creditcard.csv
 
 package-lock.json 
+
+# Spark / Delta / Parquet
+delta/
+*.parquet
+*.parquet.crc
