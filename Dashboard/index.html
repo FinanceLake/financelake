@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceLake - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        
+        <!-- Header Section -->
+        <header>
+            <div class="brand-container">
+                <img src="img/logo.png" alt="FinanceLake Logo" class="logo-img">
+                <h1 class="brand-name">FinanceLake</h1>
+            </div>
+            <p class="brand-tagline">The open-source data platform to build scalable financial analytics with confidence.</p>
+            
+
+        </header>
+        <!-- Auth Card -->
+        <div class="auth-card">
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Connexion</button>
+                <button class="tab-btn" data-tab="signup">Inscription</button>
+            </div>
+            <!-- Login Form -->
+            <div class="form-container active" id="login-form">
+                <h2 class="form-title">Connexion</h2>
+                <p class="form-subtitle">Accédez à votre plateforme d'analyse financière</p>
+                
+                <form onsubmit="event.preventDefault();">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <input type="email" id="email" placeholder="trader@financelake.io" value="trader@financelake.io">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <input type="password" id="password" value="........">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn primary">Se connecter</button>
+                    <div class="form-footer">
+                        <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                        <span class="mode-demo">Mode démo</span>
+                    </div>
+                </form>
+            </div>
+             <!-- Signup Form (Hidden by default) -->
+             <div class="form-container" id="signup-form" style="display: none;">
+                <h2 class="form-title">Inscription</h2>
+                <p class="form-subtitle">Rejoignez FinanceLake aujourd'hui</p>
+                 <form onsubmit="event.preventDefault();">
+                    <div class="input-group">
+                        <label for="signup-email">Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            <input type="email" id="signup-email" placeholder="votre@email.com">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn primary">S'inscrire</button>
+                </form>
+            </div>
+            <div class="academic-info">
+                <p>Faculté Polydisciplinaire de Taroudant</p>
+                <p>Encadré par <span class="highlight">Prof. El Hajji</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

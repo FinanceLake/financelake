@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceLake - Sélectionner Source</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="sources-page">
+    <div class="sources-container">
+        <div class="sources-header-box">
+            <div class="header-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                Configuration initiale
+            </div>
+            <h1>Choisissez votre source de données</h1>
+            <p>Sélectionnez la source de données financières qui correspond le mieux à vos besoins. Vous pourrez la
+                modifier à tout moment depuis les paramètres.</p>
+        </div>
+
+        <div class="sources-grid">
+            <!-- Yahoo Finance -->
+            <div class="source-card">
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="22 17 13.5 8.5 8.5 13.5 2 7"></polyline>
+                            <polyline points="16 17 22 17 22 11"></polyline>
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★★ <span class="rating-val">4.5</span>
+                    </div>
+                </div>
+                <h3>Yahoo Finance</h3>
+                <p class="card-desc">Source gratuite et fiable pour les données boursières mondiales</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    15 min delay
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> Données historiques</li>
+                        <li><span class="check">✓</span> Temps réel (15min delay)</li>
+                        <li><span class="check">✓</span> Actions, ETFs, Forex</li>
+                        <li><span class="check">✓</span> Gratuit</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>ETFs</span><span>Indices</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('Yahoo Finance')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Alpha Vantage -->
+            <div class="source-card">
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18" />
+                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★★ <span class="rating-val">4.7</span>
+                    </div>
+                </div>
+                <h3>Alpha Vantage</h3>
+                <p class="card-desc">API complète avec support technique et indicateurs avancés</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Real-time
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> Indicateurs techniques</li>
+                        <li><span class="check">✓</span> Données fondamentales</li>
+                        <li><span class="check">✓</span> Forex & Crypto</li>
+                        <li><span class="check">✓</span> 500 req/jour</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>Forex</span><span>Crypto</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('Alpha Vantage')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- IEX Cloud -->
+            <div class="source-card premium-border">
+                <div class="premium-tag">Premium</div>
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★★ <span class="rating-val">4.8</span>
+                    </div>
+                </div>
+                <h3>IEX Cloud</h3>
+                <p class="card-desc">Données de marché en temps réel avec API moderne et documentation claire</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Real-time
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> Temps réel</li>
+                        <li><span class="check">✓</span> API RESTful</li>
+                        <li><span class="check">✓</span> WebSocket support</li>
+                        <li><span class="check">✓</span> Documentation riche</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>ETFs</span><span>Options</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('IEX Cloud')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Finnhub -->
+            <div class="source-card">
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path
+                                d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★☆ <span class="rating-val">4.6</span>
+                    </div>
+                </div>
+                <h3>Finnhub</h3>
+                <p class="card-desc">Données financières en temps réel avec sentiment de marché et actualités</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Real-time
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> Real-time data</li>
+                        <li><span class="check">✓</span> News & Sentiment</li>
+                        <li><span class="check">✓</span> Earnings</li>
+                        <li><span class="check">✓</span> 60 req/min gratuit</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>Forex</span><span>Crypto</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('Finnhub')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Polygon.io -->
+            <div class="source-card premium-border">
+                <div class="premium-tag">Premium</div>
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★★ <span class="rating-val">4.9</span>
+                    </div>
+                </div>
+                <h3>Polygon.io</h3>
+                <p class="card-desc">Données de marché de qualité institutionnelle avec historique complet</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Real-time
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> Tick-level data</li>
+                        <li><span class="check">✓</span> Historique complet</li>
+                        <li><span class="check">✓</span> Options & Futures</li>
+                        <li><span class="check">✓</span> WebSocket</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>Options</span><span>Forex</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('Polygon.io')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- MarketStack -->
+            <div class="source-card">
+                <div class="card-header">
+                    <div class="source-icon blue-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                    <div class="rating">
+                        ★★★★☆ <span class="rating-val">4.3</span>
+                    </div>
+                </div>
+                <h3>MarketStack</h3>
+                <p class="card-desc">API simple pour données boursières mondiales de 70+ bourses</p>
+                <div class="card-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    EOD + Intraday
+                </div>
+                <div class="card-features">
+                    <h5>FONCTIONNALITÉS</h5>
+                    <ul>
+                        <li><span class="check">✓</span> 70+ exchanges</li>
+                        <li><span class="check">✓</span> EOD data</li>
+                        <li><span class="check">✓</span> Intraday</li>
+                        <li><span class="check">✓</span> 100 req/mois gratuit</li>
+                    </ul>
+                </div>
+                <div class="card-tags">
+                    <span>Stocks</span><span>ETFs</span><span>Indices</span><span>+2</span>
+                </div>
+                <button class="select-btn" onclick="selectSource('MarketStack')">
+                    Sélectionner
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+
+        </div>
+
+        <div class="sources-footer">
+            <p><span class="bulb">💡</span> Astuce : Commencez avec une source gratuite comme Yahoo Finance ou Alpha
+                Vantage</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
