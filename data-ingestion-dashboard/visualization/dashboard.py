@@ -38,7 +38,7 @@ def toggle_theme():
 # ================================
 st.set_page_config(
     page_title="FinanceLake – Ingestion Dashboard",
-    page_icon="assets/finace--Lake-logo.jpg",
+    page_icon="resources\img\logo.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -165,7 +165,7 @@ def predict_ticker_price(ticker_name):
 # ================================
 navbar_col1, navbar_col2 = st.columns([9,1])
 with navbar_col1:
-    st.image("assets/finace--Lake-logo.jpg", width=60)
+    st.image("resources\img\logo.png", width=60)
     st.markdown("<h1 style='margin-bottom:0;'>FinanceLake Dashboard</h1>", unsafe_allow_html=True)
 with navbar_col2:
     if st.button("🌙" if not st.session_state.dark_mode else "☀️"):

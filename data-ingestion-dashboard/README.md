@@ -6,7 +6,7 @@ The platform leverages **Apache Kafka, Apache Spark, Delta Lake, and Streamlit**
 
 ## 🖼️ Global Architecture
 
-![FinanceLake Architecture](data-ingestion-dashboard/assets/architecture.PNG)
+![FinanceLake Architecture](resources/images/architecture.png)
 
 ## 🏗️ Architecture Overview
 
@@ -103,7 +103,7 @@ FinanceLake follows a **modern Lakehouse architecture**:
 | Programming | Python 3.10 |
 | Streaming | Apache Kafka |
 | Processing | Apache Spark |
-| Storage | Delta Lake |
+| Storage | Delta Lake hdfs |
 | Dashboard | Streamlit |
 | Machine Learning | TensorFlow, Keras |
 | Visualization | Matplotlib |
@@ -163,35 +163,34 @@ financelake/
 kafka-server-start.bat config/server.properties
 
 3️⃣ Create Kafka Topic
-```bash
+
 kafka-topics.bat --create ^
 --topic finance-data ^
 --bootstrap-server localhost:9092
 
 4️⃣ Run Kafka Producer
-```bash
+
 python producer/kafka_producer.py
 
 5️⃣ Run Spark Pipelines
 
 Bronze ingestion
-```bash
 spark-submit --packages io.delta:delta-core_2.12:1.0.0,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 pipeline/bronze_stream.py
 
 Bronze → Silver
-```bash
+
 spark-submit --packages io.delta:delta-core_2.12:1.0.0 pipeline/bronze_to_silver.py
 
 Silver merge
-```bash
+
 spark-submit --packages io.delta:delta-core_2.12:1.0.0 pipeline/silver_stream_merge.py
 
 Silver → Gold
-```bash
+
 spark-submit --packages io.delta:delta-core_2.12:1.0.0 pipeline/silver_to_gold.py
 
 6️⃣ Launch the Dashboard
-```bash
+
 streamlit run visualization/dashboard.py
 
 
