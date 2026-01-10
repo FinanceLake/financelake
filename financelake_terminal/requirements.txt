@@ -1,0 +1,11 @@
+delta-spark==3.3.0
+# findspark==2.0.1
+kafka-python==2.2.10
+matplotlib==3.10.1
+numpy==1.26.4
+pandas==2.0.3
+plotly==6.0.1
+pyspark==3.5.7
+python-dotenv==1.2.1
+streamlit==1.52.2
+websocket-client==1.8.0
