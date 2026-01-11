@@ -1,0 +1,33 @@
+{
+  "symbol": "AMZN",
+  "generation_date": "2026-01-08T09:40:18.295889",
+  "last_training_date": "2026-01-06",
+  "last_actual_price": 240.92999267578125,
+  "model_metrics": {
+    "MAE": 29.659664863452576,
+    "MSE": 1033.1359527994994,
+    "RMSE": 32.14243227883508,
+    "MAPE": 13.261325507581434,
+    "R2": -2.802552093409711
+  },
+  "predictions": [
+    {
+      "day": 1,
+      "date": "2026-01-09",
+      "predicted_price": 191.12374877929688,
+      "confidence": 0.95
+    },
+    {
+      "day": 2,
+      "date": "2026-01-10",
+      "predicted_price": 191.02110290527344,
+      "confidence": 0.95
+    },
+    {
+      "day": 3,
+      "date": "2026-01-11",
+      "predicted_price": 190.85472106933594,
+      "confidence": 0.95
+    }
+  ]
+}
