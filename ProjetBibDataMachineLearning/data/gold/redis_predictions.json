@@ -1,0 +1,163 @@
+[
+  {
+    "timestamp": "2026-01-08T12:04:23.374496",
+    "current_price": 179.29,
+    "predicted_price": 172.1,
+    "change": -7.189999999999998,
+    "percent_change": -4.010262702883596
+  },
+  {
+    "timestamp": "2026-01-08T12:04:25.378519",
+    "current_price": 178.06,
+    "predicted_price": 172.52,
+    "change": -5.539999999999992,
+    "percent_change": -3.111310794114339
+  },
+  {
+    "timestamp": "2026-01-08T12:04:27.383622",
+    "current_price": 180.36,
+    "predicted_price": 173.03,
+    "change": -7.3300000000000125,
+    "percent_change": -4.0640940341539205
+  },
+  {
+    "timestamp": "2026-01-08T12:04:29.390259",
+    "current_price": 181.86,
+    "predicted_price": 173.61,
+    "change": -8.25,
+    "percent_change": -4.536456614978555
+  },
+  {
+    "timestamp": "2026-01-08T12:04:31.394803",
+    "current_price": 179.61,
+    "predicted_price": 174.07,
+    "change": -5.5400000000000205,
+    "percent_change": -3.084460776126062
+  },
+  {
+    "timestamp": "2026-01-08T12:04:33.398855",
+    "current_price": 177.16,
+    "predicted_price": 174.32,
+    "change": -2.8400000000000034,
+    "percent_change": -1.6030706705802682
+  },
+  {
+    "timestamp": "2026-01-08T12:04:35.404559",
+    "current_price": 173.34,
+    "predicted_price": 174.21,
+    "change": 0.8700000000000045,
+    "percent_change": 0.5019037729318129
+  },
+  {
+    "timestamp": "2026-01-08T12:04:37.409132",
+    "current_price": 176.62,
+    "predicted_price": 174.13,
+    "change": -2.490000000000009,
+    "percent_change": -1.409806363945198
+  },
+  {
+    "timestamp": "2026-01-08T12:04:39.414168",
+    "current_price": 177.32,
+    "predicted_price": 174.05,
+    "change": -3.269999999999982,
+    "percent_change": -1.8441236183171565
+  },
+  {
+    "timestamp": "2026-01-08T12:04:41.419376",
+    "current_price": 178.36,
+    "predicted_price": 174.05,
+    "change": -4.310000000000002,
+    "percent_change": -2.4164610899304786
+  },
+  {
+    "timestamp": "2026-01-08T12:04:43.423829",
+    "current_price": 181.9,
+    "predicted_price": 174.29,
+    "change": -7.610000000000014,
+    "percent_change": -4.183617372182525
+  },
+  {
+    "timestamp": "2026-01-08T12:04:45.428345",
+    "current_price": 173.25,
+    "predicted_price": 174.14,
+    "change": 0.8899999999999864,
+    "percent_change": 0.5137085137085058
+  },
+  {
+    "timestamp": "2026-01-08T12:04:47.432324",
+    "current_price": 174.03,
+    "predicted_price": 173.93,
+    "change": -0.09999999999999432,
+    "percent_change": -0.05746135723725468
+  },
+  {
+    "timestamp": "2026-01-08T12:04:49.438088",
+    "current_price": 175.68,
+    "predicted_price": 173.69,
+    "change": -1.990000000000009,
+    "percent_change": -1.1327413479052875
+  },
+  {
+    "timestamp": "2026-01-08T12:04:51.442989",
+    "current_price": 179.84,
+    "predicted_price": 173.72,
+    "change": -6.1200000000000045,
+    "percent_change": -3.4030249110320305
+  },
+  {
+    "timestamp": "2026-01-08T12:04:53.447885",
+    "current_price": 181.66,
+    "predicted_price": 173.95,
+    "change": -7.710000000000008,
+    "percent_change": -4.244192447429268
+  },
+  {
+    "timestamp": "2026-01-08T12:04:55.453397",
+    "current_price": 190.32,
+    "predicted_price": 174.78,
+    "change": -15.539999999999992,
+    "percent_change": -8.165195460277424
+  },
+  {
+    "timestamp": "2026-01-08T12:04:57.458099",
+    "current_price": 186.53,
+    "predicted_price": 175.57,
+    "change": -10.960000000000008,
+    "percent_change": -5.8757304455047485
+  },
+  {
+    "timestamp": "2026-01-08T12:04:59.464095",
+    "current_price": 190.55,
+    "predicted_price": 176.57,
+    "change": -13.980000000000018,
+    "percent_change": -7.336657045394919
+  },
+  {
+    "timestamp": "2026-01-08T12:05:01.469191",
+    "current_price": 190.89,
+    "predicted_price": 177.52,
+    "change": -13.369999999999976,
+    "percent_change": -7.004033736706992
+  },
+  {
+    "timestamp": "2026-01-08T12:05:03.474228",
+    "current_price": 185.36,
+    "predicted_price": 178.15,
+    "change": -7.210000000000008,
+    "percent_change": -3.8897280966767407
+  },
+  {
+    "timestamp": "2026-01-08T12:05:05.479243",
+    "current_price": 185.73,
+    "predicted_price": 178.62,
+    "change": -7.109999999999985,
+    "percent_change": -3.8281376191245275
+  },
+  {
+    "timestamp": "2026-01-08T12:05:07.483459",
+    "current_price": 187.52,
+    "predicted_price": 179.02,
+    "change": -8.5,
+    "percent_change": -4.532849829351536
+  }
+]
