@@ -1,182 +1,304 @@
-<div align="center">
-<br/>
-<img src="resources/img/logo.png" width="120px" alt="">
-<br/>
+# 📊 FLake - Real-time Stock Data Lake Analytics Platform
 
-# FinanceLake
+A comprehensive data lakehouse platform for real-time stock market analytics, built as a school project by three collaborators. This project demonstrates modern data engineering practices including streaming data ingestion, Delta Lake architecture, machine learning integration, and real-time visualization.
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat&logo=github&color=2370ff&labelColor=454545)](http://makeapullrequest.com)
-[![unit-test]()](https://github.com/FinanceLake/financelake/actions/workflows/test.yml)
-[![Join us on Discord](https://img.shields.io/badge/Join_Us_on-Discord-5865F2?style=flat&logo=discord&logoColor=white&labelColor=2C2F33)](https://discord.gg/rP2dNEFJ4Y)
+![Project Architecture](https://img.shields.io/badge/Status-Active-brightgreen) ![Python](https://img.shields.io/badge/Python-3.10-blue) ![Spark](https://img.shields.io/badge/Apache%20Spark-3.4.1-orange) ![Kafka](https://img.shields.io/badge/Apache%20Kafka-7.3.0-red) ![Delta Lake](https://img.shields.io/badge/Delta%20Lake-2.4.0-purple) ![Streamlit](https://img.shields.io/badge/Streamlit-Latest-darkgreen)
 
-</div>
-<br>
-<div align="left">
+## 🎯 Project Overview
 
-## What is FinanceLake?
-[FinanceLake](#) is an **open-source financial data platform** that ingests, analyzes, and visualizes market and financial data — similar in ambition to platforms like Bloomberg Terminal, but powered by open technologies.
+This platform implements a complete data lakehouse architecture with real-time stock market data processing. It features:
 
-Whether you're a quant, data engineer, open-source maintainer, or trading enthusiast, **FinanceLake** offers a scalable and intelligent data stack to support **real-time insights**, **financial research**, and **data-driven decision-making**.
+- **Real-time Data Ingestion** with Apache Kafka
+- **Multi-layer Delta Lake Architecture** (Bronze → Silver → Gold)
+- **Machine Learning Integration** with Spark MLlib
+- **Interactive Dashboard** with Streamlit
+- **Containerized Deployment** with Docker
 
----
+## 🏗️ Architecture
 
-## 🚀 Features
+```mermaid
+graph TB
+    A[📡 Data Generator] --> B[Kafka Producer]
+    B --> C[Kafka Broker]
+    C --> D[🟡 Bronze Layer<br/>Raw Data]
+    D --> E[Spark Streaming]
+    E --> F[🔵 Silver Layer<br/>Cleaned Data]
+    F --> G[Spark ML<br/>Model Training]
+    F --> H[Spark SQL<br/>Aggregations]
+    G --> I[🟢 Gold Layer<br/>KPIs & Predictions]
+    H --> I
+    I --> J[📊 Streamlit Dashboard]
 
-- 📥 **Data Ingestion**  
-  Real-time and batch ingestion pipelines using **Apache Kafka**, **Apache NiFi**, and **API connectors** (e.g., Yahoo Finance, Alpha Vantage, Quandl, etc.)
+    style D fill:#f59e0b
+    style F fill:#3b82f6
+    style I fill:#10b981
+    style J fill:#8b5cf6
+```
 
-- ⚙️ **Big Data Processing**  
-  Built on top of **Apache Spark**, **Hadoop**, and **Delta Lake** for scalable and resilient analytics.
+### Data Pipeline Flow
 
-- 📈 **Advanced Analytics**  
-  Analyze financial trends, compute indicators, perform backtesting, and build custom financial metrics.
+1. **Bronze Layer**: Raw data ingestion from Kafka streams
+2. **Silver Layer**: Data cleaning, validation, and transformation
+3. **Gold Layer**: Aggregated KPIs and ML predictions
 
-- 📊 **Interactive Visualization**  
-  Visual dashboards powered by **Grafana**, **Apache Superset**, or **Streamlit**.
+## 🚀 Quick Start
 
-- 🧠 **Query Engine**  
-  Ask questions and get answers using a simple SQL-like interface or a natural language layer (NLQ) with optional LLM integration.
+### Prerequisites
 
-- 📡 **Data APIs**  
-  REST & GraphQL APIs to expose insights and dashboards to downstream systems or external apps.
+- Docker & Docker Compose
+- Git
+- At least 8GB RAM (recommended)
 
----
+### Installation & Setup
 
-## 💡 Use Cases
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/bouyassine11/FLake-Delta-Lake.git
+   cd FLake-Delta-Lake
+   ```
 
-- Market trend monitoring for trading teams
-- Quantitative research and strategy testing
-- Portfolio performance visualization
-- Risk metrics computation
-- Real-time financial data streaming and alerting
+2. **Start the platform**
+   ```bash
+   docker-compose up --build
+   ```
 
-## 🎯 What can be accomplished with FinanceLake?
+3. **Access the dashboard**
+   - Open your browser and navigate to: `http://localhost:8501`
+   - The dashboard will automatically start updating with real-time data
 
-FinanceLake empowers users to unlock value from vast streams of financial and economic data. Here’s what you can achieve:
+### 🎥 Demo Video
 
-### 🧠 Derive Actionable Insights
-- Track price movements, volatility, and trends across global markets
-- Identify leading/lagging indicators to guide investment decisions
-- Measure performance against custom benchmarks or indices
+Watch the project in action: [`videos/demo.mp4`](videos/demo.mp4)
 
-### 📈 Build & Test Trading Strategies
-- Backtest strategies using historical tick/ohlcv data
-- Generate buy/sell signals using technical indicators (RSI, MACD, EMA…)
-- Evaluate drawdown, Sharpe ratio, beta, and other risk metrics
+This video demonstrates the complete FinanceLake data pipeline, including:
+- Real-time data ingestion
+- Spark streaming processing
+- Interactive dashboard features
+- Machine learning predictions
 
-### 📊 Visualize and Monitor in Real Time
-- Build dynamic dashboards to monitor positions, portfolios, and KPIs
-- Stream live feeds for asset prices, news sentiment, or macro indicators
-- Trigger alerts on thresholds or anomalies (via webhook, email, Slack)
+**Note**: The video file is 62MB, so it may take a moment to load.
 
-### 🔎 Query Like a Pro
-- Explore structured and unstructured financial data using SQL or natural language
-- Query fundamentals, earnings, economic events, ESG scores, and more
-- Slice and dice data per sector, geography, or custom segments
-
-### 🏗️ Build Custom Financial Applications
-- Create custom dashboards for hedge funds, fintech apps, or research teams
-- Feed data into machine learning pipelines (e.g., predictive models)
-- Connect external systems (trading bots, ML models, BI tools) via API
-
-### 🧩 Extend and Contribute
-- Add custom connectors to new data sources (e.g., crypto exchanges, alt-data)
-- Contribute notebooks, indicators, or data visualizations
-- Help shape the roadmap of an open, transparent financial platfor
-
-## 👉 Live Demos
-
-Comming soon !!
-
-## 💪 Supported Data Sources
-
-Comming soon !!
-
-## 🚀 Getting Started
-
-### Installation
-You can set up  FinanceLake by following our step-by-step instructions for either Docker Compose or Helm. Feel free to [ask the community](#💙-community) if you get stuck at any point.
-
-- [Install via Docker Compose](#)
-- [Install via Helm](#)
-
-## 🤓 Usage
-
-Please see [detailed usage instructions](#). Here's an overview on how to get started using FinanceLake.
-
-
-## Contributing
-Please read the [contribution guidelines](#) before you make contribution. The following docs list the resources you might need to know after you decided to make contribution.
-
-- [Create an Issue](#): Report a bug or feature request to FinanceLake
-- [Submit a PR](#): Start with [good first issues](#) or [issues with no assignees](#)
-- [Join Mailing list](#): Initiate or participate in project discussions on the mailing list
-- [Write a Blog](#): Write a blog to share your use cases about FinanceLake
-- [Develop a Plugin](#):  Integrate FinanceLake with more data sources as [requested by the community](#)
-
-### 👩🏾‍💻 Contributing Code
-
-If you plan to contribute code to FinanceLake, we have instructions on how to get started with setting up your Development environemtn.
-
-- [Developer Setup Instructions](#)
-- [Development Workflow](#)
-
-
-### 📄 Contributing Documentation
-
-One of the best ways to get started contributing is by improving FinanceLake's documentation. 
-
-- FinanceLake's documentation is hosted at [FinanceLake](#)
-- **We have a separate GitHub repository for FinanceLack's documentation:** [github.com/FinanceLake/financelake-docs](https://github.com/FinanceLake/financelake-docs)
-
-## ⌚ Roadmap
-
-- <a href="#" target="_blank">Roadmap</a>: Detailed roadmaps for FinanceLake.
-
-## 💙 Community
-
-Message us on <a href="https://discord.gg/rP2dNEFJ4Y" target="_blank">Discord</a>
-
-## 📄 License<a id="license"></a>
-
-
-
-## 🔧 Environment Configuration
-
-Before running the project, configure your environment variables.
-
-1. Copy the `.env.example` file and create your own `.env` file:
+### Alternative: Local Development
 
 ```bash
-cp .env.example .env
+# Install dependencies
+pip install -r requirements.txt
+
+# Start Kafka (if running locally)
+# Start individual services manually:
+python data_generator.py     # Terminal 1
+python spark_processor.py    # Terminal 2
+streamlit run streamlit_app.py  # Terminal 3
 ```
-2. Edit the .env file and fill in your specific configuration:
 
--DB_HOST:		Database host (e.g., localhost)
--KAFKA_BROKER: 		Kafka broker address
--SPARK_MASTER		Spark master URL
--API_KEY:		Your API key
--DATA_SOURCE_URL:	URL to fetch data from
--RAW_DATA_PATH:		Path for storing raw data
--DASHBOARD_USER:	Dashboard login user
--LOG_LEVEL:		Logging level (e.g., INFO, DEBUG)
+## 📁 Project Structure
+
+```
+FLake-Delta-Lake/
+├── 📄 streamlit_app.py          # Main dashboard application (1025 lines)
+├── 📄 data_generator.py         # Kafka producer for stock data simulation
+├── 📄 spark_processor.py        # Spark streaming pipeline processor
+├── 📄 requirements.txt          # Python dependencies
+├── 📄 docker-compose.yml        # Multi-container orchestration
+├── 📄 Dockerfile.spark          # Spark processor container
+├── 📄 Dockerfile.streamlit      # Streamlit dashboard container
+├── 📁 storage/                  # Delta Lake data storage
+│   ├── bronze_stock/           # Raw data layer
+│   ├── silver_stock/           # Cleaned data layer
+│   └── gold_stock/             # Aggregated KPIs layer
+└── 📁 __pycache__/             # Python cache files
+```
+
+## 🛠️ Technology Stack
+
+### Data Processing
+- **Apache Spark 3.4.1** - Distributed data processing
+- **Delta Lake 2.4.0** - ACID transactions, time travel, schema evolution
+- **Apache Kafka 7.3.0** - Real-time data streaming
+
+### Machine Learning
+- **Spark MLlib** - Distributed machine learning
+- **Random Forest Classifier** - Price direction prediction
+
+### Visualization
+- **Streamlit** - Interactive web dashboard
+- **Plotly** - Advanced charting and technical indicators
+
+### Infrastructure
+- **Docker & Docker Compose** - Container orchestration
+- **Python 3.10** - Core programming language
+
+## 📊 Dashboard Features
+
+### Real-time Analytics
+- Live stock price charts with technical indicators
+- RSI (Relative Strength Index) and MACD signals
+- Volume analysis and price change tracking
+- Auto-refresh every 5 seconds
+
+### Multi-stock Support
+- AAPL, GOOGL, MSFT, AMZN, TSLA
+- Comparative performance analysis
+- Individual stock deep-dive
+
+### Pipeline Monitoring
+- Real-time pipeline health status
+- Data flow visualization (Bronze → Silver → Gold)
+- Record counts and processing timestamps
+
+### Machine Learning Insights
+- Model accuracy gauge (Random Forest: ~72%)
+- Feature importance (RSI, MACD, Volatility)
+- Prediction confidence metrics
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# Kafka Configuration
+KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+# Storage Paths
+STORAGE_PATH=/app/storage
+
+# Spark Configuration
+SPARK_MASTER=local[*]
+```
+
+### Data Schema
+
+```json
+{
+  "timestamp": "2024-01-10T12:00:00Z",
+  "symbol": "AAPL",
+  "price": 150.25,
+  "volume": 15420,
+  "rsi": 65.4,
+  "macd": 0.85,
+  "volatility": 2.1,
+  "price_change": 1.25,
+  "price_direction": 1,
+  "volume_change": 234
+}
+```
+
+## 🧠 Machine Learning Pipeline
+
+### Model Details
+- **Algorithm**: Random Forest Classifier
+- **Target**: Price direction (0: down, 1: up)
+- **Features**: RSI, MACD, Volatility, Price Change, Volume Change
+- **Training**: Every 5 batches on streaming data
+- **Accuracy**: ~72% (varies with market conditions)
+
+### Training Process
+```python
+# Feature engineering
+features = ["rsi", "macd", "volatility", "price_change", "volume_change"]
+assembler = VectorAssembler(inputCols=features, outputCol="features")
+
+# Model training
+model = RandomForestClassifier(
+    featuresCol="features",
+    labelCol="price_direction",
+    numTrees=20,
+    maxDepth=5
+)
+```
+
+## 📈 Performance Metrics
+
+### Data Throughput
+- **Ingestion Rate**: 1 message/second (configurable)
+- **Processing Latency**: < 10 seconds end-to-end
+- **Storage**: Delta Lake with automatic optimization
+
+### System Requirements
+- **RAM**: 8GB minimum, 16GB recommended
+- **CPU**: Multi-core processor for Spark parallelism
+- **Storage**: 10GB+ for data lake and checkpoints
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Kafka Connection Issues**
+   ```bash
+   # Check Kafka logs
+   docker-compose logs kafka
+
+   # Restart services
+   docker-compose restart
+   ```
+
+2. **Spark Memory Errors**
+   ```bash
+   # Increase memory in docker-compose.yml
+   environment:
+     - SPARK_DRIVER_MEMORY=4g
+     - SPARK_EXECUTOR_MEMORY=4g
+   ```
+
+3. **Delta Lake Corruption**
+   ```bash
+   # Clean and restart
+   docker-compose down
+   rm -rf storage/
+   docker-compose up --build
+   ```
+
+### Pipeline Reset
+```bash
+# Stop all services
+docker-compose down
+
+# Clean data and checkpoints
+rm -rf storage/
+
+# Restart fresh
+docker-compose up --build
+```
+
+## 🤝 Contributors
+
+This project was built as a collaborative school project by:
+
+- **Anas Roukhmi**  
+- **Yassine Bouyahia**
+- **Abdelkrim Rekbi** 
+
+## 📚 Learning Outcomes
+
+Through this project, we gained expertise in:
+
+- **Data Engineering**: Building scalable data pipelines
+- **Big Data Technologies**: Spark, Kafka, Delta Lake
+- **Machine Learning**: Real-time model training and deployment
+- **DevOps**: Containerization and orchestration
+- **Real-time Analytics**: Streaming data processing
+- **Data Visualization**: Interactive dashboard development
+
+## 🔄 Future Enhancements
+
+- [ ] **Additional ML Models**: LSTM for time series prediction
+- [ ] **External Data Sources**: Real market data integration
+- [ ] **Advanced Analytics**: Portfolio optimization algorithms
+- [ ] **Alerting System**: Price threshold notifications
+- [ ] **Multi-asset Support**: Crypto, forex, commodities
+- [ ] **Cloud Deployment**: AWS/GCP/Azure integration
+
+## 📄 License
+
+This project is developed for educational purposes as part of a school assignment.
+
+## 🙏 Acknowledgments
+
+- **Apache Spark** community for the powerful data processing framework
+- **Delta Lake** team for the lakehouse architecture
+- **Streamlit** for the amazing dashboard framework
+- **Confluent** for Kafka and streaming expertise
+
+---
 
 
-# Steps to execute Kafka & HDFS:
-
-1. Start Kafka & Zookeeper
-
-bin/zookeeper-server-start.sh config/zookeeper.properties
-bin/kafka-server-start.sh config/server.properties
-
-2. Start HDFS 
-
-Make sure HDFS is running on localhost:9000.
-
-3. Start the Kafka producer
-
-python producer.py
-
-4. Deploy the HDFS connector
-
-curl -X POST -H "Content-Type: application/json" --data @hdfs-sink.json http://localhost:8083/connectors

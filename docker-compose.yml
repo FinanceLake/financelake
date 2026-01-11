@@ -1,68 +1,81 @@
-version: "3.8"
-
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
+    image: confluentinc/cp-zookeeper:7.3.0
     environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "${ZOOKEEPER_CLIENT_PORT}:${ZOOKEEPER_CLIENT_PORT}"
+      - "2181:2181"
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: confluentinc/cp-kafka:7.3.0
     depends_on:
       - zookeeper
-    ports:
-      - "${KAFKA_PORT}:${KAFKA_PORT}"
     environment:
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENER}
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-  spark:
-    image: bitnami/spark:latest
-    environment:
-      - SPARK_MODE=master
     ports:
-      - "${SPARK_MASTER_PORT}:${SPARK_MASTER_PORT}"
-      - "${SPARK_WEB_UI_PORT}:${SPARK_WEB_UI_PORT}"
+      - "29092:29092"
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
 
-  superset:
-    image: apache/superset
-    ports:
-      - ${SUPERSET_PORT}:${SUPERSET_PORT}
-    environment:
-      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+  data-generator:
+    image: python:3.9-slim
     depends_on:
-      - spark
+      kafka:
+        condition: service_healthy
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PYTHONUNBUFFERED: "1"
     command: >
-      /bin/bash -c "
-        superset db upgrade &&
-        superset fab create-admin --username ${SUPERSET_ADMIN_USERNAME} --firstname Admin --lastname User --email ${SUPERSET_ADMIN_EMAIL} --password ${SUPERSET_ADMIN_PASSWORD} &&
-        superset init &&
-        superset run -h 0.0.0.0 -p 8088"
+      sh -c "pip install --no-cache-dir kafka-python &&
+             python data_generator.py"
 
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  # ONLY spark-processor should run streaming
+  spark-processor:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark
+    depends_on:
+      kafka:
+        condition: service_healthy
+    working_dir: /app
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-  
-  nifi:
-    image: apache/nifi:2.3.0
-    ports:
-      - "${NIFI_HTTPS_PORT}:${NIFI_HTTPS_PORT}"
+      - .:/app
+      - ./storage:/app/storage
     environment:
-      NIFI_WEB_HTTPS_PORT: ${NIFI_HTTPS_PORT}
-    volumes:
-      - nifi_data:/opt/nifi/data
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      PYTHONUNBUFFERED: 1
+    command: >
+      sh -c "sleep 15 && python spark_processor.py"
 
-volumes:
-  postgres_data:
-  nifi_data:
+  # Streamlit ONLY reads data, does NOT run streaming
+  streamlit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    depends_on:
+      - spark-processor
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    ports:
+      - "8501:8501"
+    environment:
+      STORAGE_PATH: /app/storage
+      PYTHONUNBUFFERED: 1
+    command: >
+      streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
