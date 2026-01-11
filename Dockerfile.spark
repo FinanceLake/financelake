@@ -1,0 +1,22 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    kafka-python \
+    pandas \
+    pyarrow \
+    requests
+
+# Copy the processor script
+COPY spark_processor.py .
+
+# Run the processor
+CMD ["python", "spark_processor.py"]
