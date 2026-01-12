@@ -1,0 +1,26 @@
+# ============================================================================
+# Frontend Service - Development Dockerfile
+# ============================================================================
+# React development server for FinanceLake dashboard
+# ============================================================================
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Health check disabled for development - React dev server health checks are unreliable
+
+# Start development server
+CMD ["npm", "start"]

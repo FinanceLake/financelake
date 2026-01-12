@@ -1,0 +1,23 @@
+# Stock Data Producer Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies for yfinance
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    kafka-python \
+    yfinance \
+    pandas \
+    numpy
+
+# Copy the producer script
+COPY stock-producer.py .
+
+# Run the producer
+CMD ["python", "stock-producer.py"]

@@ -1,0 +1,442 @@
+# ============================================================================
+# FinanceLake - Modern Development Environment
+# ============================================================================
+# This Docker Compose file provides a complete development environment
+# with all modernized microservices and enterprise features.
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # ============================================================================
+  # INFRASTRUCTURE SERVICES
+  # ============================================================================
+
+  # PostgreSQL Database (Metadata & Application State)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: financelake
+      POSTGRES_USER: financelake
+      POSTGRES_PASSWORD: financelake_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U financelake -d financelake"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - financelake
+
+  # Redis (Caching & Sessions)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - financelake
+
+  # ============================================================================
+  # EVENT STREAMING
+  # ============================================================================
+
+  # Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - financelake
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - financelake
+
+  # Schema Registry
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - financelake
+
+  # ============================================================================
+  # MONITORING & OBSERVABILITY
+  # ============================================================================
+
+  # Prometheus (Metrics Collection)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - financelake
+
+  # Grafana (Visualization)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - financelake
+
+  # Elasticsearch (Search & Analytics)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - financelake
+
+  # Kibana (ELK Frontend)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    networks:
+      - financelake
+
+  # ============================================================================
+  # MICROSERVICES
+  # ============================================================================
+
+  # Data Ingestion Service
+  data-ingestion:
+    build:
+      context: ../../services/data-ingestion
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      SERVICE_NAME: data-ingestion
+      SERVICE_PORT: 8000
+      SERVICE_HOST: 0.0.0.0
+      ENVIRONMENT: development
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: financelake
+      POSTGRES_USER: financelake
+      POSTGRES_PASSWORD: financelake_password
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../../services/data-ingestion:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - financelake
+
+  # Stream Processor Service (Flink)
+  stream-processor:
+    image: flink:1.17-scala_2.12-java11
+    ports:
+      - "8082:8081"  # Flink Web UI
+      - "6123:6123"  # JobManager RPC
+    environment:
+      JOB_MANAGER_RPC_ADDRESS: stream-processor
+      TASK_MANAGER_NUMBER_OF_TASK_SLOTS: 2
+    command: jobmanager
+    volumes:
+      - ../../services/stream-processor:/opt/flink/usrlib
+    depends_on:
+      - kafka
+    networks:
+      - financelake
+
+  # API Gateway Service
+  api-gateway:
+    build:
+      context: ../../services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      SERVICE_NAME: api-gateway
+      SERVICE_PORT: 8000
+      SERVICE_HOST: 0.0.0.0
+      ENVIRONMENT: development
+      DATA_INGESTION_URL: http://data-ingestion:8000
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    depends_on:
+      - data-ingestion
+      - redis
+    volumes:
+      - ../../services/api-gateway:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - financelake
+
+  # ML Service
+  ml-service:
+    build:
+      context: ../../services/ml-service
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    environment:
+      SERVICE_NAME: ml-service
+      SERVICE_PORT: 8000
+      SERVICE_HOST: 0.0.0.0
+      ENVIRONMENT: development
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    depends_on:
+      - redis
+    volumes:
+      - ../../services/ml-service:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - financelake
+
+  # Frontend (React)
+  frontend:
+    build:
+      context: ../../services/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+      REACT_APP_WS_URL: ws://localhost:8000
+    depends_on:
+      - api-gateway
+    volumes:
+      - ../../services/frontend:/app
+      - /app/node_modules
+    networks:
+      - financelake
+
+  # ============================================================================
+  # DEVELOPMENT TOOLS
+  # ============================================================================
+
+  # MLflow (ML Experiment Tracking)
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.8.1
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql://financelake:financelake_password@postgres:5432/financelake
+      MLFLOW_ARTIFACT_STORE_URI: file:/mlflow/artifacts
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - financelake
+
+  # MinIO (S3-compatible Object Storage)
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: financelake
+      MINIO_ROOT_PASSWORD: financelake_password
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - financelake
+
+  # ============================================================================
+  # LEGACY SERVICES (For Migration)
+  # ============================================================================
+
+  # Legacy Spark Processing (Keep for comparison)
+  spark-legacy:
+    image: apache/spark:3.4.0-scala2.12-java11-python3-ubuntu
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "7077:7077"
+      - "4040:4040"
+    volumes:
+      - ../../spark-kafka-parquet:/app
+      - ../../storage:/app/storage
+    depends_on:
+      - kafka
+      - postgres
+    networks:
+      - financelake
+
+  # Legacy Superset (Keep for comparison)
+  superset-legacy:
+    image: apache/superset:latest
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: your-secret-key-here
+      SUPERSET_LOAD_EXAMPLES: "no"
+      DATABASE_DIALECT: postgresql
+      DATABASE_USER: financelake
+      DATABASE_PASSWORD: financelake_password
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_DB: financelake
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ../../superset:/app/superset
+    networks:
+      - financelake
+
+# ============================================================================
+# VOLUMES
+# ============================================================================
+
+volumes:
+  postgres_data:
+  redis_data:
+  zookeeper_data:
+  zookeeper_logs:
+  kafka_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+  mlflow_artifacts:
+  minio_data:
+
+# ============================================================================
+# NETWORKS
+# ============================================================================
+
+networks:
+  financelake:
+    driver: bridge
