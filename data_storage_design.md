@@ -4,12 +4,19 @@
 
 This document outlines the design of a data storage layer for the FinanceLake project. The layer is designed to store cleaned and processed financial data in a structured format, optimized for analytical queries and efficient storage. The design follows the Delta Lake architecture with a medallion pattern (Bronze, Silver, Gold layers) to ensure data quality progression and analytical readiness. The data ingestion component is already implemented using Kafka and is available in the data-ingestion-kafka folder.
 
+## Video Demonstration
+
+<video width="640" height="360" controls>
+  <source src="multimedia/video.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 ## 2. Data Format Choice
 ## Architecture Diagram
 
 ### High-Level Architecture
 
-![FinanceLake Architecture](img/arch.png)
+![FinanceLake Architecture](multimedia/arch.jpeg)
 
 *Figure 1: High-level architecture of the FinanceLake data storage layer*
 
