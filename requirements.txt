@@ -1,2 +1,8 @@
-yfinance
-kafka
+pyspark>=3.0.0
+kafka-python>=2.0.0
+flask>=2.0.0
+requests>=2.25.0
+numpy>=1.21.0
+yfinance>=0.2.18
+findspark>=1.4.0
+delta-spark>=3.2.0
