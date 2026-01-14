@@ -7,7 +7,7 @@ This document outlines the design of a data storage layer for the FinanceLake pr
 ## Video Demonstration
 
 <video width="640" height="360" controls>
-  <source src="multimedia/video.mp4" type="video/mp4">
+  <source src="resources/vid/video.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
@@ -16,7 +16,7 @@ This document outlines the design of a data storage layer for the FinanceLake pr
 
 ### High-Level Architecture
 
-![FinanceLake Architecture](multimedia/arch.jpeg)
+![FinanceLake Architecture](resources/img/Finance_Lake_Architecture.PNG)
 
 *Figure 1: High-level architecture of the FinanceLake data storage layer*
 
@@ -26,61 +26,64 @@ This document outlines the design of a data storage layer for the FinanceLake pr
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                            FinanceLake Data Lake                            │
 │                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │                          Data Sources                                  │ │
-│  │  (APIs, Databases, Files, Streams)                                      │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
-│  │                    Apache Spark Processing Engine                       │ │
-│  │  - Data Ingestion (Kafka and Structured Streaming)                    │ │
-│  │  - ETL Transformations                                                  │ │
-│  │  - Data Quality Validation                                              │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  │                 (APIs, Databases, Files, Streams)                      │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │                          Data Ingestion                                │ │
+│  │              (Apache Kafka, Apache NIFI, Airbyte, etc)                 │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │                    Apache Spark Processing Engine                      │ │
+│  │          - ETL Transformations     - Feature Engineering               │ │
+│  │          - Data Quality Validation    - KPI Calculations               │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │                       Delta Lake Storage Layer                         │ │
-│  │                                                                         │ │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                     │ │
-│  │  │ Bronze Layer│  │ Silver Layer│  │ Gold Layer │                     │ │
-│  │  │ - Raw Data  │  │ - Processed │  │ - Analytics│                     │ │
-│  │  │ - Partitioned│  │ - Enriched │  │ - Aggregated│                     │ │
-│  │  │ by date/region│  │ - Business │  │ - Optimized│                     │ │
-│  │  └─────────────┘  │ Logic Applied│  │ for Queries│                     │ │
-│  │                    └─────────────┘  └─────────────┘                     │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
-│  │                    HDFS Storage Backend                               │ │
+│  │  ┌───────────────┐        ┌──────────────┐          ┌─────────────┐    │ │
+│  │  │ Bronze Layer  │        │ Silver Layer │          │ Gold Layer  │    │ │
+│  │  │ - Raw Data    │        │ - Processed  │          │ - Analytics │    │ │
+│  │  │ - Partitioned │        │ - Enriched   │          │ - Aggregated│    │ │
+│  │  │ by date/region│        │ - Business   │          │ - Optimized │    │ │
+│  │  └───────────────┘        │ Logic Applied│          │ for Queries │    │ │
+│  │                           └──────────────┘          └─────────────┘    │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │                          HDFS Storage Backend                          │ │
 │  │  - Distributed File System                                             │ │
 │  │  - Partitioned Storage (date=YYYY-MM-DD/region=XX/)                    │ │
 │  │  - Replication for Fault Tolerance                                     │ │
 │  │  - Hadoop Ecosystem Integration                                        │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │                      Query & Analytics Layer                           │ │
 │  │  - Apache Spark SQL                                                    │ │
 │  │  - BI Tools (Tableau, Power BI)                                        │ │
 │  │  - ML/AI Workloads                                                     │ │
 │  │  - Real-time Dashboards                                                │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                             │
-│  ┌─────────────────────────────────────────────────────────────────────────┐ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                      V                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
 │  │              Deep Learning & Predictive Analytics Layer                │ │
 │  │  - RNN/LSTM Models for Market Trend Prediction                         │ │
 │  │  - Real-time Anomaly Detection on Silver Layer Data                    │ │
-│  │  - Feature Engineering (Technical Indicators, Normalization)            │ │
+│  │  - Feature Engineering (Technical Indicators, Normalization)           │ │
 │  │  - Distributed Model Training with Spark MLlib                         │ │
 │  │  - Batch & Stream Inference Pipeline                                   │ │
 │  │  - Prediction Storage in Gold Layer for Analytics                      │ │
-│  └─────────────────────────────────────────────────────────────────────────┘ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 ### Data Flow Architecture
 
 ```
-Data Sources → Apache Spark → Delta Lake Layers → HDFS Storage → Deep Learning Models → Analytics Tools
+Data Sources → Data Ingestion → Apache Spark → Delta Lake Layers → HDFS Storage → Deep Learning Models → Analytics Tools
 
 Detailed Flow:
 1. Raw data ingestion via Kafka producers and Spark Structured Streaming (see data-ingestion-kafka folder)
