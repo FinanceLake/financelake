@@ -1,0 +1,167 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  producer:
+    build:
+      context: .
+      dockerfile: docker/producer.Dockerfile
+    container_name: producer
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    command: python /app/apps/producer.py
+
+  # -------------------------------------------------------
+  # 1. SPARK CLUSTER (Master + Worker)
+  # -------------------------------------------------------
+  spark-master:
+    image: apache/spark:3.5.0
+    container_name: spark-master
+    user: root
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      - SPARK_MODE=master
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    container_name: spark-worker
+    user: root
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      # CAPACITY: 2 Cores Total
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=1G
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+
+  # -------------------------------------------------------
+  # 2. STREAM CONTAINER (Continuous)
+  # -------------------------------------------------------
+  spark-stream:
+    build:
+      context: .
+      dockerfile: docker/spark.Dockerfile
+    container_name: spark-stream
+    user: root
+    depends_on:
+      kafka:
+        condition: service_healthy
+      spark-master:
+        condition: service_started
+    ports:
+      - "4040:4040"
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    # FIX APPLIED: Changed cores.max from 2 to 1
+    command: >
+      /opt/spark/bin/spark-submit 
+      --master spark://spark-master:7077 
+      --driver-memory 512M 
+      --executor-memory 512M
+      --conf spark.cores.max=1
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0,io.delta:delta-spark_2.12:3.1.0 
+      /app/apps/spark_stream.py
+    restart: always
+
+  # -------------------------------------------------------
+  # 3. TRAINER CONTAINER (Initial + On-Demand)
+  # -------------------------------------------------------
+  spark-submit:
+    build:
+      context: .
+      dockerfile: docker/spark.Dockerfile
+    container_name: spark-submit
+    user: root
+    depends_on:
+      spark-master:
+        condition: service_started
+    volumes:
+      - .:/app
+      - ./storage:/app/storage
+    # FIX CONFIRMED: Uses 1 Core.
+    command: >
+      /bin/bash -c "
+      echo '⏳ Starting 3-minute timer for data accumulation...' &&
+      sleep 180 &&
+      echo '🚀 Timer done. Starting Initial Training...' &&
+      /opt/spark/bin/spark-submit 
+      --master spark://spark-master:7077 
+      --driver-memory 512M 
+      --executor-memory 512M
+      --conf spark.cores.max=1 
+      --packages io.delta:delta-spark_2.12:3.1.0 
+      /app/apps/train_model.py;
+      echo '✅ Initial sequence finished. Idling for Scheduler...' &&
+      tail -f /dev/null"
+
+  # -------------------------------------------------------
+  # 4. SCHEDULER & API
+  # -------------------------------------------------------
+  scheduler:
+    image: mcuadros/ofelia:latest
+    container_name: scheduler
+    depends_on:
+      spark-submit:
+        condition: service_started
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: daemon --docker 
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.market-close.schedule: "@every 3 minutes"
+      ofelia.job-exec.market-close.container: "spark-submit" 
+      ofelia.job-exec.market-close.command: >
+        /opt/spark/bin/spark-submit 
+        --master spark://spark-master:7077 
+        --packages io.delta:delta-spark_2.12:3.1.0 
+        /app/apps/train_model.py
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    container_name: api
+    volumes:
+      - ./storage:/app/storage
+      - ./dashboard:/app/dashboard  
+    ports:
+      - "8000:8000"
+    restart: always

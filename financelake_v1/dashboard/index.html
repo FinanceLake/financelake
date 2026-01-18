@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceLake AI | Pro Terminal</title>
+    
+    <link rel="stylesheet" href="/static/style.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+
+    <div class="dashboard-container">
+        <header>
+            <div class="brand">
+                <span class="logo-icon">⚡</span>
+                <h1>FINANCELAKE <span class="pro-badge">PRO</span></h1>
+            </div>
+            <div class="status-pill offline" id="connection-status">
+                <span class="dot"></span> Connecting...
+            </div>
+        </header>
+
+        <section class="top-section-grid">
+            
+            <div class="card glass-card chart-card">
+                <div class="card-header">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <h3>Market Trend Analysis</h3>
+                        <select id="symbol-selector" class="symbol-select">
+                            <option value="ALL">Loading...</option>
+                        </select>
+                    </div>
+                    <span class="time-label" id="last-updated">--:--:--</span>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card glass-card metric-card">
+                <div class="card-header">
+                    <h3>🤖 Model Diagnostics</h3>
+                </div>
+                
+                <div class="metric-body">
+                    <div class="metric-group">
+                        <div class="metric-label">Prediction Accuracy (R²)</div>
+                        <div class="metric-value gradient-text" id="metric-r2">--%</div>
+                        <div class="metric-bar-bg">
+                            <div class="metric-bar-fill" id="r2-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="metric-group">
+                        <div class="metric-label">RMSE (Avg Error)</div>
+                        <div class="metric-value" id="metric-rmse" style="color: #cbd5e1;">--</div>
+                    </div>
+                </div>
+
+                <div class="metric-footer">
+                    Last Training Run:<br>
+                    <span id="metric-date" style="color: #94a3b8;">Pending...</span>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="tickers-section">
+            <h3>Live Market Signals</h3>
+            <div class="ticker-grid" id="ticker-grid">
+                </div>
+        </section>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

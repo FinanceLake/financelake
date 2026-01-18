@@ -1,0 +1,9 @@
+# Spark/Delta Temporary Files
+storage/delta-lake/_spark_metadata/
+storage/checkpoints/
+__pycache__/
+.venv/
+.DS_Store
+
+# Large Data (Optional - let the cloud recreate these)
+# storage/delta-lake/
