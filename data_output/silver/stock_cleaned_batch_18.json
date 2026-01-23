@@ -1,0 +1,90 @@
+[
+  {
+    "symbol": "AAPL",
+    "price": 262.91,
+    "volume": 406121,
+    "timestamp": "2025-11-19 01:15:19.521461",
+    "open": 263.48,
+    "high": 263.64,
+    "low": 262.77,
+    "close": 262.91,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "GOOGL",
+    "price": 252.06,
+    "volume": 144881,
+    "timestamp": "2025-11-19 01:15:19.541194",
+    "open": 252.28,
+    "high": 252.43,
+    "low": 252.01,
+    "close": 252.06,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "MSFT",
+    "price": 515.22,
+    "volume": 120575,
+    "timestamp": "2025-11-19 01:15:19.561540",
+    "open": 515.34,
+    "high": 515.58,
+    "low": 515.06,
+    "close": 515.22,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "AMZN",
+    "price": 221.18,
+    "volume": 387245,
+    "timestamp": "2025-11-19 01:15:19.577590",
+    "open": 221.59,
+    "high": 221.8,
+    "low": 221.16,
+    "close": 221.18,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "TSLA",
+    "price": 445.24,
+    "volume": 600848,
+    "timestamp": "2025-11-19 01:15:19.594969",
+    "open": 444.96,
+    "high": 445.76,
+    "low": 444.88,
+    "close": 445.24,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "META",
+    "price": 732.86,
+    "volume": 56426,
+    "timestamp": "2025-11-19 01:15:19.607394",
+    "open": 733.05,
+    "high": 733.8,
+    "low": 732.7,
+    "close": 732.86,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "NFLX",
+    "price": 123.89,
+    "volume": 34774,
+    "timestamp": "2025-11-19 01:15:19.616964",
+    "open": 123.95,
+    "high": 124.07,
+    "low": 123.8,
+    "close": 123.89,
+    "data_type": "raw"
+  },
+  {
+    "symbol": "NVDA",
+    "price": 180.43,
+    "volume": 1358126,
+    "timestamp": "2025-11-19 01:15:19.631648",
+    "open": 180.35,
+    "high": 180.54,
+    "low": 180.24,
+    "close": 180.43,
+    "data_type": "raw"
+  }
+]
