@@ -6,10 +6,7 @@ This document outlines the design of a data storage layer for the FinanceLake pr
 
 ## Video Demonstration
 
-<video width="640" height="360" controls>
-  <source src="resources/vid/FinanceLake_Architecture_Demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+![Video Demo](resources/vid/FinanceLake_Architecture_Demo.mp4)
 
 ## 2. Data Format Choice
 ## Architecture Diagram
